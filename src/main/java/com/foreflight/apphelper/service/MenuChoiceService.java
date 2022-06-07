@@ -4,19 +4,22 @@ import com.foreflight.apphelper.domain.MenuChoice;
 import com.foreflight.apphelper.domain.MenuChoiceDTO;
 import com.foreflight.apphelper.domain.Resource;
 import com.foreflight.apphelper.repository.MenuChoiceRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@AllArgsConstructor
 @Service
 public class MenuChoiceService {
 
     private final MenuChoiceRepository menuChoiceRepository;
     private final ResourceService resourceService;
+
+    public MenuChoiceService(MenuChoiceRepository menuChoiceRepository, ResourceService resourceService) {
+        this.menuChoiceRepository = menuChoiceRepository;
+        this.resourceService = resourceService;
+    }
 
     // Get list of all available menu choices
     public List<MenuChoice> getAllChoices() {
