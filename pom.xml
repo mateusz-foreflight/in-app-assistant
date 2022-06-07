@@ -39,6 +39,11 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+<!--            <version>8.5.12</version>-->
+        </dependency>
 
     </dependencies>
 
@@ -47,6 +52,16 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>8.5.11</version>
+                <configuration>
+                    <url>jdbc:postgresql://localhost:5455/postgres?currentSchema=inappassistant,public</url>
+                    <user>pgUser</user>
+                    <password>pass</password>
+                </configuration>
             </plugin>
         </plugins>
     </build>
