@@ -71,6 +71,13 @@ public class MenuChoiceService {
                 });
     }
 
+    public void deleteChoice(Long id) {
+        if(!menuChoiceRepository.existsById(id)){
+            throw new IllegalStateException("Menu choice with the id " + id + " does not exist.");
+        }
+        menuChoiceRepository.deleteById(id);
+    }
+
     private MenuChoice unpackDTO(MenuChoiceDTO dto){
         MenuChoice choice = new MenuChoice();
 
@@ -95,12 +102,5 @@ public class MenuChoiceService {
         choice.setResources(newResources);
 
         return choice;
-    }
-
-    public void deleteChoice(Long id) {
-        if(!menuChoiceRepository.existsById(id)){
-            throw new IllegalStateException("Menu choice with the id " + id + " does not exist.");
-        }
-        menuChoiceRepository.deleteById(id);
     }
 }
