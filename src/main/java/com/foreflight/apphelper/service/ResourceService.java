@@ -16,19 +16,24 @@ public class ResourceService {
         this.resourceRepository = resourceRepository;
     }
 
+    // Get a list of all resources
     public List<Resource> getAllResources() {
         return resourceRepository.findAll();
     }
 
+    // Get a single resource by id
     public Optional<Resource> getResourceById(Long id) { return resourceRepository.findResourceById(id); }
 
+    // Get a single resource by name
     public Optional<Resource> getResourceByName(String name) { return resourceRepository.findResourceByName(name); }
 
+    // Add a new resource
     public Resource addResource(ResourceDTO resource) {
         Resource newResource = unpackDTO(resource);
         return resourceRepository.save(newResource);
     }
 
+    // Update an existing resource with the given id, or create a new one if one doesn't exist already
     public Resource updateResource(ResourceDTO resource, Long id) {
         Resource newResource = unpackDTO(resource);
         return resourceRepository.findResourceById(id)
@@ -43,6 +48,7 @@ public class ResourceService {
                 });
     }
 
+    // Delete a resource by id
     public void deleteResource(Long id) {
         if(!resourceRepository.existsById(id)){
             throw new IllegalStateException("Resource with the id " + id + " does not exist.");
@@ -50,6 +56,7 @@ public class ResourceService {
         resourceRepository.deleteById(id);
     }
 
+    // Create a Resource object using a data transfer object
     private Resource unpackDTO(ResourceDTO dto){
         Resource resource = new Resource();
 

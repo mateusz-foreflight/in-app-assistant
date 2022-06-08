@@ -29,6 +29,7 @@ public class MenuChoiceService {
     // Get menu choice by id
     public Optional<MenuChoice> getChoiceById(Long id) { return menuChoiceRepository.findMenuChoiceById(id); }
 
+    // Get all menu choices that don't have a parent
     public List<MenuChoice> getTopLevelChoices(){
         List<MenuChoice> topLevelChoices = new ArrayList<>();
         for(MenuChoice menuChoice : menuChoiceRepository.findAll()){
@@ -39,6 +40,7 @@ public class MenuChoiceService {
         return topLevelChoices;
     }
 
+    // Get all child menu choices of a given menu choice specified by id
     public List<MenuChoice> getChildrenById(Long id){
         List<MenuChoice> childChoices = new ArrayList<>();
         for(MenuChoice menuChoice : menuChoiceRepository.findAll()){
@@ -49,12 +51,13 @@ public class MenuChoiceService {
         return childChoices;
     }
 
-    // Add new menu using menu-choice data transfer object
+    // Add new menu choice
     public MenuChoice addChoice(MenuChoiceDTO choice) {
         MenuChoice newChoice = unpackDTO(choice);
         return menuChoiceRepository.save(newChoice);
     }
 
+    // Update an existing menu choice with the given id, or create a new one if one doesn't exist already
     public MenuChoice updateChoice(MenuChoiceDTO choice, Long id) {
         MenuChoice newChoice = unpackDTO(choice);
 
@@ -71,6 +74,7 @@ public class MenuChoiceService {
                 });
     }
 
+    // Delete menu choice by id
     public void deleteChoice(Long id) {
         if(!menuChoiceRepository.existsById(id)){
             throw new IllegalStateException("Menu choice with the id " + id + " does not exist.");
@@ -78,6 +82,7 @@ public class MenuChoiceService {
         menuChoiceRepository.deleteById(id);
     }
 
+    // Create a MenuChoice object using a data transfer object
     private MenuChoice unpackDTO(MenuChoiceDTO dto){
         MenuChoice choice = new MenuChoice();
 
