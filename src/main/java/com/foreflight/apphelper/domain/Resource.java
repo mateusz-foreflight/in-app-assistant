@@ -21,8 +21,7 @@ public class Resource {
     public Resource() {
     }
 
-    public Resource(Long id, String name, String link) {
-        this.id = id;
+    public Resource(String name, String link) {
         this.name = name;
         this.link = link;
     }
