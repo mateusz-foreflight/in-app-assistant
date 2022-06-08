@@ -60,6 +60,10 @@ public class ResourceService {
     private Resource unpackDTO(ResourceDTO dto){
         Resource resource = new Resource();
 
+        if(dto.getName() == null){
+            throw new IllegalStateException("Resource name must not be null");
+        }
+
         resource.setName(dto.getName());
         resource.setLink(dto.getLink());
 

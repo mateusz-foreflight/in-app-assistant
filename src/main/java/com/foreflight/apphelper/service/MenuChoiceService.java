@@ -86,12 +86,15 @@ public class MenuChoiceService {
     private MenuChoice unpackDTO(MenuChoiceDTO dto){
         MenuChoice choice = new MenuChoice();
 
+        if(dto.getChoiceName() == null){
+            throw new IllegalStateException("Menu choice name must not be null");
+        }
         choice.setName(dto.getChoiceName());
 
         if(dto.getParentName() != null) {
             Optional<MenuChoice> newParent = menuChoiceRepository.findMenuChoiceByName(dto.getParentName());
             if (!newParent.isPresent()) {
-                throw new IllegalStateException("No menu choice with the provided name exists");
+                throw new IllegalStateException("No menu choice with the provided parent name " + dto.getParentName() + " exists");
             }
             choice.setParent(newParent.get());
         }
@@ -100,7 +103,7 @@ public class MenuChoiceService {
         for(String resourceName : dto.getResourceNames()){
             Optional<Resource> newResource = resourceService.getResourceByName(resourceName);
             if (!newResource.isPresent()){
-                throw new IllegalStateException("No resource with the provided name exists");
+                throw new IllegalStateException("No resource with the provided resource name" + resourceName + " exists");
             }
             newResources.add(newResource.get());
         }

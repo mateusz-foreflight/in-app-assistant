@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS
     "resource"
 (
     "id"   SERIAL not null PRIMARY KEY,
-    "name" TEXT null UNIQUE,
+    "name" TEXT not null UNIQUE,
     "link" TEXT null
 );
 
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS
     "menuchoice"
 (
     "id"        SERIAL not null PRIMARY KEY,
-    "name"      TEXT null UNIQUE,
+    "name"      TEXT not null UNIQUE,
     "parent_id" INTEGER null REFERENCES menuchoice
 );
 
