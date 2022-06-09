@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "menuchoice")
@@ -69,6 +70,20 @@ public class MenuChoice implements Serializable {
 
     public void setResources(List<Resource> resources) {
         this.resources = resources;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MenuChoice choice = (MenuChoice) o;
+
+        return id.equals(choice.id) && name.equals(choice.name) && Objects.equals(parent, choice.parent) && resources.equals(choice.resources);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, parent, resources);
     }
 
     @Override

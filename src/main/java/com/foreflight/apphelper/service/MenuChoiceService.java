@@ -42,6 +42,10 @@ public class MenuChoiceService {
 
     // Get all child menu choices of a given menu choice specified by id
     public List<MenuChoice> getChildrenById(Long id){
+        if(!menuChoiceRepository.existsById(id)){
+            throw new IllegalStateException("Menu choice with the id " + id + " does not exist.");
+        }
+
         List<MenuChoice> childChoices = new ArrayList<>();
         for(MenuChoice menuChoice : menuChoiceRepository.findAll()){
             if(menuChoice.getParent() != null && menuChoice.getParent().getId() == id){

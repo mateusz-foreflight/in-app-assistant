@@ -2,6 +2,7 @@ package com.foreflight.apphelper.domain;
 
 
 import javax.persistence.*;
+import java.util.Objects;
 
 
 @Entity
@@ -48,6 +49,19 @@ public class Resource {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Resource resource = (Resource) o;
+        return id.equals(resource.id) && name.equals(resource.name) && Objects.equals(link, resource.link);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, link);
     }
 
     @Override
