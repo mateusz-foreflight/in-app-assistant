@@ -1,11 +1,10 @@
 package com.foreflight.apphelper.unittests;
 
-import com.foreflight.apphelper.domain.MenuChoice;
 import com.foreflight.apphelper.domain.Resource;
 import com.foreflight.apphelper.domain.ResourceDTO;
+import com.foreflight.apphelper.domain.Source;
 import com.foreflight.apphelper.repository.ResourceRepository;
 import com.foreflight.apphelper.service.ResourceService;
-import com.foreflight.apphelper.unittests.mockprofiles.MockProfile1;
 import com.foreflight.apphelper.unittests.mockprofiles.MockProfile2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -100,14 +99,14 @@ public class ResourceServiceTests {
     void addResource_withValidResource(){
         // Given
         MockProfile2 mockProfile = new MockProfile2(resourceRepository);
-        ResourceDTO dto = new ResourceDTO("new", "newLink");
+        ResourceDTO dto = new ResourceDTO("new", "newLink", "PilotGuide");
 
         // When
         Resource actual = resourceService.addResource(dto);
         actual.setId(5L);
 
         // Then
-        Resource expected = new Resource("new", "newLink");
+        Resource expected = new Resource("new", "newLink", Source.PilotGuide);
         expected.setId(5L);
         assertThat(actual).isEqualTo(expected);
     }
@@ -116,7 +115,7 @@ public class ResourceServiceTests {
     void addResource_withInvalidResource_withInvalidName(){
         // Given
         MockProfile2 mockProfile = new MockProfile2(resourceRepository);
-        ResourceDTO dto = new ResourceDTO(null, "newLink");
+        ResourceDTO dto = new ResourceDTO(null, "newLink", "PilotGuide");
 
         // When, Then
         assertThatExceptionOfType(IllegalStateException.class)
@@ -129,13 +128,13 @@ public class ResourceServiceTests {
     void updateResource_withPresentId(){
         // Given
         MockProfile2 mockProfile = new MockProfile2(resourceRepository);
-        ResourceDTO dto = new ResourceDTO("new", "newLink");
+        ResourceDTO dto = new ResourceDTO("new", "newLink", "PilotGuide");
 
         // When
         Resource actual = resourceService.updateResource(dto, 1L);
 
         // Then
-        Resource expected = new Resource("new", "newLink");
+        Resource expected = new Resource("new", "newLink", Source.PilotGuide);
         expected.setId(1L);
         assertThat(actual).isEqualTo(expected);
     }
@@ -144,13 +143,13 @@ public class ResourceServiceTests {
     void updateResource_withNotPresentId(){
         // Given
         MockProfile2 mockProfile = new MockProfile2(resourceRepository);
-        ResourceDTO dto = new ResourceDTO("new", "newLink");
+        ResourceDTO dto = new ResourceDTO("new", "newLink", "PilotGuide");
 
         // When
         Resource actual = resourceService.updateResource(dto, 15L);
 
         // Then
-        Resource expected = new Resource("new", "newLink");
+        Resource expected = new Resource("new", "newLink", Source.PilotGuide);
         expected.setId(15L);
         assertThat(actual).isEqualTo(expected);
     }

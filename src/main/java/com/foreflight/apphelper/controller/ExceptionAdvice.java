@@ -15,4 +15,11 @@ public class ExceptionAdvice {
     String illegalStateHandler(IllegalStateException ex){
         return ex.getMessage();
     }
+
+    @ResponseBody
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    String illegalArgumentHandler(IllegalArgumentException ex){
+        return ex.getMessage();
+    }
 }

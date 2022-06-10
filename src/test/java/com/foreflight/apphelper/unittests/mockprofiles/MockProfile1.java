@@ -2,6 +2,7 @@ package com.foreflight.apphelper.unittests.mockprofiles;
 
 import com.foreflight.apphelper.domain.MenuChoice;
 import com.foreflight.apphelper.domain.Resource;
+import com.foreflight.apphelper.domain.Source;
 import com.foreflight.apphelper.repository.MenuChoiceRepository;
 import com.foreflight.apphelper.service.ResourceService;
 import org.mockito.Mockito;
@@ -30,7 +31,7 @@ public class MockProfile1{
     public MockProfile1(MenuChoiceRepository menuChoiceRepository, ResourceService resourceService){
         // SET UP DATA
         // Set up resources
-        this.resource1 = new Resource("resource1", "link1");
+        this.resource1 = new Resource("resource1", "link1", Source.PilotGuide);
         this.resource1.setId(1L);
         this.resources = new ArrayList<>();
         resources.add(resource1);

@@ -1,12 +1,19 @@
 package com.foreflight.apphelper.domain;
 
 
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 
 @Entity
 @Table(name = "resource")
+@TypeDef(
+        name = "pgsql_enum",
+        typeClass = PostgreSQLEnumType.class
+)
 public class Resource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,12 +26,18 @@ public class Resource {
     @Column
     private String link;
 
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "resource_source")
+    @Type( type = "pgsql_enum" )
+    private Source source;
+
     public Resource() {
     }
 
-    public Resource(String name, String link) {
+    public Resource(String name, String link, Source source) {
         this.name = name;
         this.link = link;
+        this.source = source;
     }
 
     public Long getId() {
@@ -51,17 +64,25 @@ public class Resource {
         this.link = link;
     }
 
+    public Source getSource() {
+        return source;
+    }
+
+    public void setSource(Source source) {
+        this.source = source;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Resource resource = (Resource) o;
-        return id.equals(resource.id) && name.equals(resource.name) && Objects.equals(link, resource.link);
+        return id.equals(resource.id) && name.equals(resource.name) && Objects.equals(link, resource.link) && source.equals(resource.source);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, link);
+        return Objects.hash(id, name, link, source);
     }
 
     @Override
@@ -70,6 +91,7 @@ public class Resource {
         sb.append("id=").append(id);
         sb.append(", name='").append(name).append('\'');
         sb.append(", link='").append(link).append('\'');
+        sb.append(", source='").append(source.name()).append('\'');
         sb.append('}');
         return sb.toString();
     }

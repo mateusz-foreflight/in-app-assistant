@@ -2,11 +2,14 @@ package com.foreflight.apphelper.service;
 
 import com.foreflight.apphelper.domain.Resource;
 import com.foreflight.apphelper.domain.ResourceDTO;
+import com.foreflight.apphelper.domain.Source;
 import com.foreflight.apphelper.repository.ResourceRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ResourceService {
@@ -66,6 +69,17 @@ public class ResourceService {
 
         resource.setName(dto.getName());
         resource.setLink(dto.getLink());
+
+        try {
+            resource.setSource(Source.valueOf(dto.getSource()));
+        } catch (IllegalArgumentException ex){
+            List<String> sourceNames = Stream.of(Source.values()).map(Source::name).collect(Collectors.toList());
+            throw new IllegalArgumentException("Invalid source name: \"" + dto.getSource() +
+                    "\". Name must be one of the following: " + sourceNames);
+        } catch (NullPointerException ex){
+            throw new IllegalArgumentException("Source name cannot be null.");
+        }
+
 
         return resource;
     }
