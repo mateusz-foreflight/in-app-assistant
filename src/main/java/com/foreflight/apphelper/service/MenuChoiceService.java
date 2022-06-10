@@ -31,13 +31,7 @@ public class MenuChoiceService {
 
     // Get all menu choices that don't have a parent
     public List<MenuChoice> getTopLevelChoices(){
-        List<MenuChoice> topLevelChoices = new ArrayList<>();
-        for(MenuChoice menuChoice : menuChoiceRepository.findAll()){
-            if(menuChoice.getParent() == null){
-                topLevelChoices.add(menuChoice);
-            }
-        }
-        return topLevelChoices;
+        return menuChoiceRepository.findAllTopLevelMenuChoices();
     }
 
     // Get all child menu choices of a given menu choice specified by id
@@ -46,13 +40,7 @@ public class MenuChoiceService {
             throw new IllegalStateException("Menu choice with the id " + id + " does not exist.");
         }
 
-        List<MenuChoice> childChoices = new ArrayList<>();
-        for(MenuChoice menuChoice : menuChoiceRepository.findAll()){
-            if(menuChoice.getParent() != null && menuChoice.getParent().getId() == id){
-                childChoices.add(menuChoice);
-            }
-        }
-        return childChoices;
+        return menuChoiceRepository.findChildMenuChoicesById(id);
     }
 
     // Add new menu choice

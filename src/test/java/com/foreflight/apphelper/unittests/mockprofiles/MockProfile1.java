@@ -6,10 +6,7 @@ import com.foreflight.apphelper.repository.MenuChoiceRepository;
 import com.foreflight.apphelper.service.ResourceService;
 import org.mockito.Mockito;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -48,7 +45,8 @@ public class MockProfile1{
         this.choices = Arrays.asList(choice1, choice2, choice3);
 
         // SET UP METHOD MOCKS
-        // menuChoiceRepository - save, findAll, findMenuChoiceById, findMenuChoiceByName, existsById
+        // menuChoiceRepository - save, findAll, findMenuChoiceById, findMenuChoiceByName, existsById,
+        //                        findAllTopLevelMenuChoices, findChildMenuChoicesById
         when(menuChoiceRepository.save(Mockito.any(MenuChoice.class))).then(returnsFirstArg());
 
         when(menuChoiceRepository.findAll()).thenReturn(choices);
@@ -69,6 +67,11 @@ public class MockProfile1{
         doReturn(true).when(menuChoiceRepository).existsById(1L);
         doReturn(true).when(menuChoiceRepository).existsById(2L);
         doReturn(true).when(menuChoiceRepository).existsById(3L);
+
+        when(menuChoiceRepository.findAllTopLevelMenuChoices()).thenReturn(Collections.singletonList(choice1));
+
+        when(menuChoiceRepository.findChildMenuChoicesById(anyLong())).thenReturn(Collections.emptyList());
+        doReturn(Arrays.asList(choice2, choice3)).when(menuChoiceRepository).findChildMenuChoicesById(1L);
 
         // resourceService - getResourceByName
         when(resourceService.getResourceByName(anyString())).thenReturn(Optional.empty());
