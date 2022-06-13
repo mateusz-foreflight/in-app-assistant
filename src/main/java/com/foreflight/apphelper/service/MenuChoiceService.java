@@ -4,6 +4,8 @@ import com.foreflight.apphelper.domain.MenuChoice;
 import com.foreflight.apphelper.domain.MenuChoiceDTO;
 import com.foreflight.apphelper.domain.Resource;
 import com.foreflight.apphelper.repository.MenuChoiceRepository;
+import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 
+// Retrived from here: https://vladmihalcea.com/the-best-way-to-map-an-enum-type-with-jpa-and-hibernate/
 public class PostgreSQLEnumType extends org.hibernate.type.EnumType {
 
     public void nullSafeSet(

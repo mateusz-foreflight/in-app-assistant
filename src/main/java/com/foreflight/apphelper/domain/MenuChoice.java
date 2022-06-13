@@ -19,13 +19,13 @@ public class MenuChoice implements Serializable {
     @Column
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(
             name = "parent_id",
             table = "menuchoice")
     private MenuChoice parent;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "menuchoice_resource",
             joinColumns = @JoinColumn(name = "menuchoice_id"),
