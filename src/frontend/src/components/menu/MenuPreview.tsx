@@ -2,19 +2,27 @@ import React from "react";
 import {Button, Row} from "@foreflight/ffui";
 import {getChildrenById, getTopLevelMenuChoices} from "../../client";
 import MenuChoice from "../../types/MenuChoice";
+import ResourceView from "./ResourceView";
+import Resource from "../../types/Resource";
 
 type MenuChoiceSelectable = MenuChoice &
     {selected: boolean}
 
 type MenuPreviewState = {
-    choices: MenuChoiceSelectable[][]
+    choices: MenuChoiceSelectable[][],
+    displayResourceView: boolean,
+    resourcesToDisplay: Resource[]
 }
 
 class MenuPreview extends React.Component<{}, MenuPreviewState>{
 
-    constructor({}) {
-        super({})
-        this.state = {choices: []}
+    constructor(props: {}) {
+        super(props)
+        this.state = {
+            choices: [],
+            displayResourceView: false,
+            resourcesToDisplay: []
+        }
     }
 
     async componentDidMount() {
@@ -61,23 +69,43 @@ class MenuPreview extends React.Component<{}, MenuPreviewState>{
         })
 
 
+
         this.setState((state) =>{
+            let newChoices: MenuChoiceSelectable[][] = state.choices;
+            let newDisplayResourceView: boolean = state.displayResourceView;
+            let newResourcesToDisplay: Resource[];
+
             // The clicked choice is marked as selected, others are deselected
-            state.choices[row].forEach((choice, idx) => {
+            newChoices[row].forEach((choice, idx) => {
                 choice.selected = choiceIdx == idx;
             })
 
             // Clear all rows after the selected one
-            for(let r = row + 1; r < state.choices.length; r++){
-                state.choices[r] = []
+            for(let r = row + 1; r < newChoices.length; r++){
+                newChoices[r] = []
             }
 
             // Add new children of selected choice to state
-            state.choices.push(children);
+            newChoices.push(children);
 
-            return state;
+            if(children.length == 0){
+                newDisplayResourceView = true;
+                newResourcesToDisplay = choiceSelected.resources.slice();
+                console.log(newResourcesToDisplay)
+            }
+            else{
+                newDisplayResourceView = false;
+                newResourcesToDisplay = [];
+            }
+
+            return {
+                choices: newChoices,
+                displayResourceView: newDisplayResourceView,
+                resourcesToDisplay: newResourcesToDisplay
+            };
         })
     }
+
 
     render(){
         return(
@@ -93,6 +121,9 @@ class MenuPreview extends React.Component<{}, MenuPreviewState>{
                         ))}
                     </Row>
                 ))}
+
+                {this.state.displayResourceView &&
+                    <ResourceView resources={this.state.resourcesToDisplay}></ResourceView>}
             </div>
         );
     }
