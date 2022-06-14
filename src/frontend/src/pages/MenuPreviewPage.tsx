@@ -1,9 +1,9 @@
 import React from "react";
-import MenuPreview from "../components/menu/MenuPreview";
+import MenuPreview from "../components/menuPreview/MenuPreview";
 import {Table, TBody, Td, TdHeader, TFoot, THead, Tr} from "@foreflight/ffui";
 
 
-class Home extends React.Component<{},{}>{
+class MenuPreviewPage extends React.Component<{},{}>{
 
     render(){
         return (
@@ -16,4 +16,4 @@ class Home extends React.Component<{},{}>{
     }
 }
 
-export default Home;
+export default MenuPreviewPage;
