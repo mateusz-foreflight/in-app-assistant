@@ -1,12 +1,14 @@
 import React from "react";
 import MenuChoiceList from "../components/menuChoiceList/MenuChoiceList";
-import {getAllMenuChoices, getChildrenById, updateMenuChoice} from "../client";
+import {getAllMenuChoices, getAllResources, getChildrenById, updateMenuChoice} from "../client";
 import MenuChoice from "../types/MenuChoice";
 import MenuChoiceWithChildren from "../types/MenuChoiceWithChildren";
 import MenuChoiceEditor from "../components/menuChoiceEditor/MenuChoiceEditor";
+import Resource from "../types/Resource";
 
 type MenuModificationPageState = {
     choices: MenuChoiceWithChildren[];
+    resources: Resource[];
     selectedChoice: MenuChoiceWithChildren | null;
 }
 
@@ -16,6 +18,7 @@ class MenuModificationPage extends React.Component<{}, MenuModificationPageState
 
         this.state = {
             choices: [],
+            resources: [],
             selectedChoice: null
         }
     }
@@ -54,8 +57,25 @@ class MenuModificationPage extends React.Component<{}, MenuModificationPageState
         })
     }
 
+    async updateResources() {
+        let fetchedResources: Resource[] = []
+
+        await getAllResources().then(response => {
+            return response.json() as Promise<any[]>;
+        }).then(data => {
+            data.forEach((resource) => {
+                fetchedResources.push(resource as Resource)
+            })
+        });
+
+        this.setState({
+            resources: fetchedResources
+        })
+    }
+
     async componentDidMount() {
         await this.updateChoices();
+        await this.updateResources();
     }
 
     updateSelectedChoice = (newChoice: MenuChoiceWithChildren) => {
@@ -74,7 +94,10 @@ class MenuModificationPage extends React.Component<{}, MenuModificationPageState
         return (
             <div>
                 Menu Modification:
-                <MenuChoiceEditor editingChoice={this.state.selectedChoice}
+                <MenuChoiceEditor key={this.state.selectedChoice?.id}
+                                  choiceBeingEdited={this.state.selectedChoice}
+                                  allChoices={this.state.choices}
+                                  allResources={this.state.resources}
                                   cancelCallback={this.cancelButton}
                                   saveCallback={this.updateChoices}>
                 </MenuChoiceEditor>

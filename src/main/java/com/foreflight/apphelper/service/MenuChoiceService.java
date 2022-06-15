@@ -48,6 +48,9 @@ public class MenuChoiceService {
     // Add new menu choice
     public MenuChoice addChoice(MenuChoiceDTO choice) {
         MenuChoice newChoice = unpackDTO(choice);
+        if(menuChoiceRepository.findMenuChoiceByName(newChoice.getName()).isPresent()){
+            throw new IllegalStateException("Menu choice with the name " + newChoice.getName() + " already exists.");
+        }
         return menuChoiceRepository.save(newChoice);
     }
 
