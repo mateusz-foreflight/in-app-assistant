@@ -1,5 +1,5 @@
 import React from "react";
-import {IColumn, IRow, SortableTable, Table, TBody, Td, TdHeader, THead, Tr} from "@foreflight/ffui";
+import {IColumn, IRow, SortableTable} from "@foreflight/ffui";
 import Resource from "../../types/Resource";
 
 type ResourceViewProps = {
@@ -8,10 +8,6 @@ type ResourceViewProps = {
 
 
 class ResourceView extends React.Component<ResourceViewProps, {}>{
-    constructor(props: ResourceViewProps) {
-        super(props);
-    }
-
 
     resourceCols: IColumn[] = [
         { name: 'Resource Name', defaultWidth:'10%'},

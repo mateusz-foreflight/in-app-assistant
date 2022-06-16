@@ -1,25 +1,27 @@
 import React from "react";
-import {Button, Option, Row, Select, TextInput, Text, Heading} from "@foreflight/ffui";
+import {Button, Option, Row, Select, TextInput, Heading} from "@foreflight/ffui";
 import MenuChoiceWithChildren from "../../types/MenuChoiceWithChildren";
 import {addMenuChoice, deleteMenuChoice, updateMenuChoice} from "../../client";
-import MenuChoiceList from "../menuChoiceList/MenuChoiceList";
-import MenuChoice from "../../types/MenuChoice";
 import MenuChoiceDTO from "../../types/MenuChoiceDTO";
-import resource from "../../types/Resource";
 import Resource from "../../types/Resource";
-import {Buffer} from "buffer";
+
+
+enum editAddState {
+    editing,
+    adding,
+    inactive
+}
 
 type MenuChoiceEditorProps = {
     choiceBeingEdited: MenuChoiceWithChildren | null
     allChoices: MenuChoiceWithChildren[]
     allResources: Resource[]
-    cancelCallback: () => void;
+    deactivateCallback: () => void;
     saveCallback: () => void;
 }
 
 type MenuChoiceEditorState = {
-    addingNewChoice: boolean
-    editingChoice: boolean
+    editingAdding: editAddState
     nameInputValue: string
     parentNameInputValue: string | null
     resourceNames: string[]
@@ -31,11 +33,10 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
         super(props);
 
         this.state = {
-            addingNewChoice: false,
-            editingChoice: this.props.choiceBeingEdited !== null,
-            nameInputValue: (this.props.choiceBeingEdited?.name == undefined) ? "" : this.props.choiceBeingEdited.name,
-            parentNameInputValue: (this.props.choiceBeingEdited?.parent?.name == undefined) ? null : this.props.choiceBeingEdited.parent.name,
-            resourceNames: (this.props.choiceBeingEdited?.resources == undefined) ? [] : this.props.choiceBeingEdited.resources.map(resource => resource.name)
+            editingAdding: this.props.choiceBeingEdited ? editAddState.editing : editAddState.inactive,
+            nameInputValue: (this.props.choiceBeingEdited?.name === undefined) ? "" : this.props.choiceBeingEdited.name,
+            parentNameInputValue: (this.props.choiceBeingEdited?.parent?.name === undefined) ? null : this.props.choiceBeingEdited.parent.name,
+            resourceNames: (this.props.choiceBeingEdited?.resources === undefined) ? [] : this.props.choiceBeingEdited.resources.map(resource => resource.name)
         }
     }
 
@@ -57,11 +58,11 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
             await addMenuChoice(newChoice);
         }
 
-        if(this.state.addingNewChoice){
+        if(this.state.editingAdding === editAddState.adding){
             this.cancelFunc();
         }
         else {
-            this.props.cancelCallback();
+            this.props.deactivateCallback();
         }
         this.props.saveCallback();
     }
@@ -69,25 +70,26 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
     async deleteChoice(deleteId: number){
         await deleteMenuChoice(deleteId);
 
-        this.props.cancelCallback();
+        this.props.deactivateCallback();
         this.props.saveCallback();
     }
 
     cancelFunc() {
         this.setState({
-            addingNewChoice: false,
-            editingChoice: false,
+            editingAdding: editAddState.inactive,
             nameInputValue: "",
             parentNameInputValue: null,
             resourceNames: []
         })
+
+        this.props.deactivateCallback();
     }
 
     getParentOptions() : Option[] {
         let options: Option[] = [];
 
         for(const choice of this.props.allChoices){
-            if(choice.id != this.props.choiceBeingEdited?.id) {
+            if(choice.id !== this.props.choiceBeingEdited?.id) {
                 options.push({
                     label: choice.name,
                     value: choice.name
@@ -104,7 +106,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
         for(const resource of this.props.allResources){
             let addResource = true;
             for(const existResourceName of this.state.resourceNames){
-                if(resource.name == existResourceName){
+                if(resource.name === existResourceName){
                     addResource = false;
                     break;
                 }
@@ -121,6 +123,17 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
         return options;
     }
 
+    getCurrentlyEditingText(){
+        switch(this.state.editingAdding){
+            case editAddState.adding:
+                return "ADDING NEW CHOICE"
+            case editAddState.editing:
+                return this.props.choiceBeingEdited?.name
+            case editAddState.inactive:
+                return "";
+        }
+    }
+
     render() {
         return (
           <Row borderBottom={true} borderTop={true} width={"35%"} margin={"10px"} flexDirection={"column"}>
@@ -129,21 +142,21 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
               </Heading>
               <p>
                   Currently Editing: <span style={{color: "#3498DB"}}>{
-                      this.state.addingNewChoice ? "ADDING A NEW CHOICE" : this.state.editingChoice ? this.props.choiceBeingEdited?.name : ""}</span>
+                     this.getCurrentlyEditingText()}</span>
               </p>
 
               <Row>
-                  <Button disabled={this.state.addingNewChoice || this.state.editingChoice}
+                  <Button disabled={this.state.editingAdding === editAddState.adding || this.state.editingAdding === editAddState.editing}
                           onClick={() => {
                               this.setState({
-                                  addingNewChoice: true
+                                  editingAdding: editAddState.adding
                               })
                           }}
                   >
                       Add New Choice
                   </Button>
                   <Button color={"red"}
-                          disabled={!this.state.editingChoice}
+                          disabled={!(this.state.editingAdding === editAddState.editing)}
                           onClick={() => {
                               this.deleteChoice(this.props.choiceBeingEdited!.id)
                           }}
@@ -154,7 +167,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
 
               <Row width={"60%"} margin={"10px"}>
                   <TextInput label={"Name"}
-                             disabled={!this.state.editingChoice && !this.state.addingNewChoice}
+                             disabled={this.state.editingAdding === editAddState.inactive}
                              value={this.state.nameInputValue}
                              onChange={newValue => {
                                  this.setState({nameInputValue: newValue})
@@ -165,7 +178,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
               <Row width={"60%"} margin={"10px"}  flexAlign={"center"}>
                   <Select autoComplete
                           options={this.getParentOptions()}
-                          disabled={!this.state.editingChoice && !this.state.addingNewChoice}
+                          disabled={this.state.editingAdding === editAddState.inactive}
                           value={this.state.parentNameInputValue}
                           label={"Parent Name"}
                           onChange={(newValue: string | null) => {
@@ -176,7 +189,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
                   />
 
                   <Button color={"orange"}
-                          disabled={!this.state.editingChoice && !this.state.addingNewChoice}
+                          disabled={this.state.editingAdding === editAddState.inactive}
                           onClick={() => {
                               this.setState({
                                   parentNameInputValue: null
@@ -189,7 +202,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
 
               <Row width={"60%"} margin={"10px"}>
                   <Select autoComplete
-                          disabled={!this.state.editingChoice && !this.state.addingNewChoice}
+                          disabled={this.state.editingAdding === editAddState.inactive}
                           label={"Add Resource"}
                           options={this.getResourceOptions()}
                           onChange={(newValue: string) => {
@@ -220,8 +233,8 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
               </Row>
 
               <Row flexJustify={"flex-end"} width={"100%"}>
-                  <Button color={"green"} disabled={!this.state.editingChoice && !this.state.addingNewChoice} onClick={() => {
-                      if(this.state.editingChoice){
+                  <Button color={"green"} disabled={this.state.editingAdding === editAddState.inactive} onClick={() => {
+                      if(this.state.editingAdding === editAddState.editing){
                           this.saveModifiedChoice(this.props.choiceBeingEdited!.id)
                       }
                       else{
@@ -230,13 +243,8 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
                   }}>
                       Save
                   </Button>
-                  <Button color={"red"} disabled={!this.state.editingChoice && !this.state.addingNewChoice} onClick={() => {
-                      if(this.state.addingNewChoice){
-                          this.cancelFunc();
-                      }
-                      else {
-                          this.props.cancelCallback();
-                      }
+                  <Button color={"red"} disabled={this.state.editingAdding === editAddState.inactive} onClick={() => {
+                      this.cancelFunc();
                   }}>
                       Cancel
                   </Button>

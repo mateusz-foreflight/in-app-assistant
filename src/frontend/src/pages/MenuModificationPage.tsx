@@ -1,6 +1,6 @@
 import React from "react";
 import MenuChoiceList from "../components/menuChoiceList/MenuChoiceList";
-import {getAllMenuChoices, getAllResources, getChildrenById, updateMenuChoice} from "../client";
+import {getAllMenuChoices, getAllResources, getChildrenById} from "../client";
 import MenuChoice from "../types/MenuChoice";
 import MenuChoiceWithChildren from "../types/MenuChoiceWithChildren";
 import MenuChoiceEditor from "../components/menuChoiceEditor/MenuChoiceEditor";
@@ -84,7 +84,7 @@ class MenuModificationPage extends React.Component<{}, MenuModificationPageState
         });
     }
 
-    cancelButton = () => {
+    deselectChoice = () => {
         this.setState({
             selectedChoice: null
         })
@@ -98,7 +98,7 @@ class MenuModificationPage extends React.Component<{}, MenuModificationPageState
                                   choiceBeingEdited={this.state.selectedChoice}
                                   allChoices={this.state.choices}
                                   allResources={this.state.resources}
-                                  cancelCallback={this.cancelButton}
+                                  deactivateCallback={this.deselectChoice}
                                   saveCallback={this.updateChoices}>
                 </MenuChoiceEditor>
                 <MenuChoiceList choices={this.state.choices}

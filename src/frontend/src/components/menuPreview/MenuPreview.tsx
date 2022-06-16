@@ -77,7 +77,7 @@ class MenuPreview extends React.Component<{}, MenuPreviewState>{
 
             // The clicked choice is marked as selected, others are deselected
             newChoices[row].forEach((choice, idx) => {
-                choice.selected = choiceIdx == idx;
+                choice.selected = choiceIdx === idx;
             })
 
             // Clear all rows after the selected one
@@ -88,7 +88,7 @@ class MenuPreview extends React.Component<{}, MenuPreviewState>{
             // Add new children of selected choice to state
             newChoices.push(children);
 
-            if(children.length == 0){
+            if(children.length === 0){
                 newDisplayResourceView = true;
                 newResourcesToDisplay = choiceSelected.resources.slice();
                 console.log(newResourcesToDisplay)

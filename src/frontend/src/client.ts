@@ -1,4 +1,3 @@
-import MenuChoice from "./types/MenuChoice";
 import MenuChoiceDTO from "./types/MenuChoiceDTO";
 
 const baseUrl = "http://localhost:8080/api/v1";

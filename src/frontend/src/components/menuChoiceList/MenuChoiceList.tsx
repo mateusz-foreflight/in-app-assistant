@@ -11,10 +11,6 @@ type MenuChoiceListProps = {
 
 class MenuChoiceList extends React.Component<MenuChoiceListProps, {}>{
 
-    constructor(props: MenuChoiceListProps) {
-        super(props);
-    }
-
     render() {
         return(
             <>

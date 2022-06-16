@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, Heading, Row, Table, TBody, Td, TdHeader, THead, Tr} from "@foreflight/ffui";
+import {Button, Row, Table, TBody, Td, TdHeader, THead, Tr} from "@foreflight/ffui";
 
 type SelectableListProps<T> = {
     columnNames: string[]
@@ -11,10 +11,6 @@ type SelectableListProps<T> = {
 }
 
 class SelectableList<T> extends React.Component<SelectableListProps<T>, { }>{
-    constructor(props: SelectableListProps<T>) {
-        super(props);
-    }
-
 
     render() {
         return (
@@ -25,7 +21,7 @@ class SelectableList<T> extends React.Component<SelectableListProps<T>, { }>{
                             <Tr>
                                 <TdHeader defaultWidth={"5px"}></TdHeader>
                                 {this.props.columnNames.map(column => (
-                                    <TdHeader>{column}</TdHeader>
+                                    <TdHeader key={column}>{column}</TdHeader>
                                 ))}
                             </Tr>
                         </THead>
@@ -33,7 +29,7 @@ class SelectableList<T> extends React.Component<SelectableListProps<T>, { }>{
                             {this.props.items.map((item) => (
                                 <Tr key={this.props.getIdFunc(item)}>
                                     <Td>
-                                        <Button small color={this.props.selectedItemId == this.props.getIdFunc(item) ? "green" : "blue"} onClick={() => {
+                                        <Button small color={this.props.selectedItemId === this.props.getIdFunc(item) ? "green" : "blue"} onClick={() => {
                                             this.props.selectCallback(item);
                                         }}>
                                             Select

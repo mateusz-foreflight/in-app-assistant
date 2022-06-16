@@ -2,7 +2,6 @@ import React from "react";
 import {Heading} from "@foreflight/ffui";
 import SelectableList from "../selectableList/SelectableList";
 import Resource from "../../types/Resource";
-import MenuChoiceWithChildren from "../../types/MenuChoiceWithChildren";
 
 type ResourceListProps = {
     resources: Resource[];
@@ -11,9 +10,6 @@ type ResourceListProps = {
 }
 
 class ResourceList extends React.Component<ResourceListProps, {}>{
-    constructor(props: ResourceListProps) {
-        super(props);
-    }
 
     render() {
         return (
