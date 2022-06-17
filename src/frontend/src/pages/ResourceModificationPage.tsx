@@ -1,7 +1,8 @@
 import React from "react";
 import ResourceList from "../components/resourceList/ResourceList";
 import Resource from "../types/Resource";
-import {getAllResources} from "../client";
+import {extract, getAllResources} from "../client";
+import ResourceEditor from "../components/resourceEditor/ResourceEditor";
 
 type ResourceModificationPageState = {
     resources: Resource[];
@@ -18,20 +19,10 @@ class ResourceModificationPage extends React.Component<{}, ResourceModificationP
         }
     }
 
-    async updateResources() {
-        let fetchedResources: Resource[] = []
-
-        await getAllResources().then(response => {
-            return response.json() as Promise<any[]>;
-        }).then(data => {
-            data.forEach((resource) => {
-                fetchedResources.push(resource as Resource)
-            })
-        });
-
+    updateResources = async () => {
         this.setState({
-            resources: fetchedResources
-        })
+            resources: await extract<Resource>(getAllResources())
+        });
     }
 
     updateSelectedResource = (selResource: Resource) => {
@@ -44,14 +35,27 @@ class ResourceModificationPage extends React.Component<{}, ResourceModificationP
         await this.updateResources();
     }
 
+    deselectResource = () => {
+        this.setState({
+            selectedResource: null
+        })
+    }
+
     render() {
         return (
             <div>
                 Resource Modification:
+                <ResourceEditor
+                    key={this.state.selectedResource?.id}
+                    resourceBeingEdited={this.state.selectedResource}
+                    deactivateCallback={this.deselectResource}
+                    saveCallback={this.updateResources}
+                />
                 <ResourceList
                     resources={this.state.resources}
                     selectCallback={this.updateSelectedResource}
-                    selectedResourceId={this.state.selectedResource ? this.state.selectedResource.id : null}/>
+                    selectedResourceId={this.state.selectedResource ? this.state.selectedResource.id : null}
+                />
             </div>
         );
     }

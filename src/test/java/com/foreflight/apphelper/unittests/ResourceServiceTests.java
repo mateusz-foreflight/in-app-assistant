@@ -160,7 +160,7 @@ public class ResourceServiceTests {
         MockProfile2 mockProfile = new MockProfile2(resourceRepository);
 
         // When
-        resourceService.deleteResource(1L);
+        resourceService.deleteResource(1L, false);
 
         // Then
         verify(resourceRepository).deleteById(1L);
@@ -173,7 +173,7 @@ public class ResourceServiceTests {
 
         // When, Then
         assertThatExceptionOfType(IllegalStateException.class)
-                .isThrownBy(() -> resourceService.deleteResource(15L))
+                .isThrownBy(() -> resourceService.deleteResource(15L, false))
                 .withMessageContaining("id")
                 .withMessageContaining(String.valueOf(15));
     }

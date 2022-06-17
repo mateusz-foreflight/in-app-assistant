@@ -4,6 +4,7 @@ import com.foreflight.apphelper.domain.Resource;
 import com.foreflight.apphelper.domain.ResourceDTO;
 import com.foreflight.apphelper.domain.Source;
 import com.foreflight.apphelper.repository.ResourceRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,6 +44,7 @@ public class ResourceService {
                 .map(foundResource -> {
                     foundResource.setName(newResource.getName());
                     foundResource.setLink(newResource.getLink());
+                    foundResource.setSource(newResource.getSource());
                     return resourceRepository.save(foundResource);
                 })
                 .orElseGet(() -> {
@@ -52,11 +54,20 @@ public class ResourceService {
     }
 
     // Delete a resource by id
-    public void deleteResource(Long id) {
+    public void deleteResource(Long id, boolean force) {
         if(!resourceRepository.existsById(id)){
             throw new IllegalStateException("Resource with the id " + id + " does not exist.");
         }
-        resourceRepository.deleteById(id);
+
+        if(force) {
+            resourceRepository.deleteRelationsToMenuChoiceById(id);
+        }
+        try {
+            resourceRepository.deleteById(id);
+        } catch (DataIntegrityViolationException ex){
+            throw new IllegalStateException("Cannot delete Resource with id " + id + " because the Resource is " +
+                    "referenced by other entries. Try using a force delete.");
+        }
     }
 
     // Create a Resource object using a data transfer object

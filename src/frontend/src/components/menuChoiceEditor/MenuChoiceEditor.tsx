@@ -6,7 +6,7 @@ import MenuChoiceDTO from "../../types/MenuChoiceDTO";
 import Resource from "../../types/Resource";
 
 
-enum editAddState {
+enum modification {
     editing,
     adding,
     inactive
@@ -21,7 +21,7 @@ type MenuChoiceEditorProps = {
 }
 
 type MenuChoiceEditorState = {
-    editingAdding: editAddState
+    modificationState: modification
     nameInputValue: string
     parentNameInputValue: string | null
     resourceNames: string[]
@@ -33,7 +33,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
         super(props);
 
         this.state = {
-            editingAdding: this.props.choiceBeingEdited ? editAddState.editing : editAddState.inactive,
+            modificationState: this.props.choiceBeingEdited ? modification.editing : modification.inactive,
             nameInputValue: (this.props.choiceBeingEdited?.name === undefined) ? "" : this.props.choiceBeingEdited.name,
             parentNameInputValue: (this.props.choiceBeingEdited?.parent?.name === undefined) ? null : this.props.choiceBeingEdited.parent.name,
             resourceNames: (this.props.choiceBeingEdited?.resources === undefined) ? [] : this.props.choiceBeingEdited.resources.map(resource => resource.name)
@@ -58,7 +58,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
             await addMenuChoice(newChoice);
         }
 
-        if(this.state.editingAdding === editAddState.adding){
+        if(this.state.modificationState === modification.adding){
             this.cancelFunc();
         }
         else {
@@ -76,7 +76,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
 
     cancelFunc() {
         this.setState({
-            editingAdding: editAddState.inactive,
+            modificationState: modification.inactive,
             nameInputValue: "",
             parentNameInputValue: null,
             resourceNames: []
@@ -124,12 +124,12 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
     }
 
     getCurrentlyEditingText(){
-        switch(this.state.editingAdding){
-            case editAddState.adding:
+        switch(this.state.modificationState){
+            case modification.adding:
                 return "ADDING NEW CHOICE"
-            case editAddState.editing:
+            case modification.editing:
                 return this.props.choiceBeingEdited?.name
-            case editAddState.inactive:
+            case modification.inactive:
                 return "";
         }
     }
@@ -146,17 +146,17 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
               </p>
 
               <Row>
-                  <Button disabled={this.state.editingAdding === editAddState.adding || this.state.editingAdding === editAddState.editing}
+                  <Button disabled={this.state.modificationState === modification.adding || this.state.modificationState === modification.editing}
                           onClick={() => {
                               this.setState({
-                                  editingAdding: editAddState.adding
+                                  modificationState: modification.adding
                               })
                           }}
                   >
                       Add New Choice
                   </Button>
                   <Button color={"red"}
-                          disabled={!(this.state.editingAdding === editAddState.editing)}
+                          disabled={!(this.state.modificationState === modification.editing)}
                           onClick={() => {
                               this.deleteChoice(this.props.choiceBeingEdited!.id)
                           }}
@@ -167,7 +167,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
 
               <Row width={"60%"} margin={"10px"}>
                   <TextInput label={"Name"}
-                             disabled={this.state.editingAdding === editAddState.inactive}
+                             disabled={this.state.modificationState === modification.inactive}
                              value={this.state.nameInputValue}
                              onChange={newValue => {
                                  this.setState({nameInputValue: newValue})
@@ -178,7 +178,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
               <Row width={"60%"} margin={"10px"}  flexAlign={"center"}>
                   <Select autoComplete
                           options={this.getParentOptions()}
-                          disabled={this.state.editingAdding === editAddState.inactive}
+                          disabled={this.state.modificationState === modification.inactive}
                           value={this.state.parentNameInputValue}
                           label={"Parent Name"}
                           onChange={(newValue: string | null) => {
@@ -189,7 +189,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
                   />
 
                   <Button color={"orange"}
-                          disabled={this.state.editingAdding === editAddState.inactive}
+                          disabled={this.state.modificationState === modification.inactive}
                           onClick={() => {
                               this.setState({
                                   parentNameInputValue: null
@@ -202,7 +202,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
 
               <Row width={"60%"} margin={"10px"}>
                   <Select autoComplete
-                          disabled={this.state.editingAdding === editAddState.inactive}
+                          disabled={this.state.modificationState === modification.inactive}
                           label={"Add Resource"}
                           options={this.getResourceOptions()}
                           onChange={(newValue: string) => {
@@ -233,8 +233,8 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
               </Row>
 
               <Row flexJustify={"flex-end"} width={"100%"}>
-                  <Button color={"green"} disabled={this.state.editingAdding === editAddState.inactive} onClick={() => {
-                      if(this.state.editingAdding === editAddState.editing){
+                  <Button color={"green"} disabled={this.state.modificationState === modification.inactive} onClick={() => {
+                      if(this.state.modificationState === modification.editing){
                           this.saveModifiedChoice(this.props.choiceBeingEdited!.id)
                       }
                       else{
@@ -243,7 +243,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
                   }}>
                       Save
                   </Button>
-                  <Button color={"red"} disabled={this.state.editingAdding === editAddState.inactive} onClick={() => {
+                  <Button color={"red"} disabled={this.state.modificationState === modification.inactive} onClick={() => {
                       this.cancelFunc();
                   }}>
                       Cancel

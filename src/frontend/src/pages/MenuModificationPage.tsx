@@ -1,6 +1,6 @@
 import React from "react";
 import MenuChoiceList from "../components/menuChoiceList/MenuChoiceList";
-import {getAllMenuChoices, getAllResources, getChildrenById} from "../client";
+import {getAllMenuChoices, getAllResources, getChildrenById, extract} from "../client";
 import MenuChoice from "../types/MenuChoice";
 import MenuChoiceWithChildren from "../types/MenuChoiceWithChildren";
 import MenuChoiceEditor from "../components/menuChoiceEditor/MenuChoiceEditor";
@@ -24,29 +24,11 @@ class MenuModificationPage extends React.Component<{}, MenuModificationPageState
     }
 
     async getChildren(choiceId: number) {
-        let children: MenuChoice[] = [];
-
-        await getChildrenById(choiceId).then(response =>{
-            return response.json() as Promise<any[]>
-        }).then(data => {
-            data.forEach((child) => {
-                children.push(child as MenuChoice);
-            })
-        })
-
-        return children;
+        return await extract<MenuChoice>(getChildrenById(choiceId))
     }
 
     updateChoices = async () => {
-        let fetchedChoices: MenuChoiceWithChildren[] = [];
-
-        await getAllMenuChoices().then(response => {
-            return response.json() as Promise<any[]>;
-        }).then(data => {
-            data.forEach((choice) => {
-                fetchedChoices.push(choice as MenuChoiceWithChildren)
-            })
-        });
+        let fetchedChoices = await extract<MenuChoiceWithChildren>(getAllMenuChoices());
 
         for (const choice of fetchedChoices) {
             choice.children = await this.getChildren(choice.id);
@@ -58,18 +40,8 @@ class MenuModificationPage extends React.Component<{}, MenuModificationPageState
     }
 
     async updateResources() {
-        let fetchedResources: Resource[] = []
-
-        await getAllResources().then(response => {
-            return response.json() as Promise<any[]>;
-        }).then(data => {
-            data.forEach((resource) => {
-                fetchedResources.push(resource as Resource)
-            })
-        });
-
         this.setState({
-            resources: fetchedResources
+            resources: await extract<Resource>(getAllResources())
         })
     }
 

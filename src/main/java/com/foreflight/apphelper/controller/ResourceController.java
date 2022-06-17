@@ -45,9 +45,8 @@ public class ResourceController {
 
     // Delete a resource by id
     @DeleteMapping(path = "{resourceId}")
-    public void deleteResource(@PathVariable("resourceId") Long id) {
-        resourceService.deleteResource(id);
+    public void deleteResource(@PathVariable("resourceId") Long id, @RequestParam(defaultValue = "false") boolean force) {
+        resourceService.deleteResource(id, force);
     }
-
 
 }
