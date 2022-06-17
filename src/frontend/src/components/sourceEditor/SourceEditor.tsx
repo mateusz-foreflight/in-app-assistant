@@ -1,9 +1,8 @@
 import React from "react";
-import Resource from "../../types/Resource";
-import {Button, Heading, Option, Row, Select, TextInput} from "@foreflight/ffui";
-import {addResource, deleteResource, updateResource} from "../../client";
-import ResourceDTO from "../../types/ResourceDTO";
 import Source from "../../types/Source";
+import {Button, Heading, Row, TextInput} from "@foreflight/ffui";
+import {addResource, addSource, deleteSource, updateResource, updateSource} from "../../client";
+import SourceDTO from "../../types/SourceDTO";
 
 enum modification {
     editing,
@@ -11,98 +10,75 @@ enum modification {
     inactive
 }
 
-type ResourceEditorProps = {
-    resourceBeingEdited: Resource | null
-    deactivateCallback: () => void;
+type SourceEditorProps = {
+    sourceBeingEdited: Source | null,
+    deactivateCallback: () => void,
     saveCallback: () => void;
-    allSources: Source[]
 }
 
-type ResourceEditorState = {
+type SourceEditorState = {
     modificationState: modification
     nameInputValue: string
     linkInputValue: string
-    sourceInputValue: string
 }
 
-class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditorState>{
-    constructor(props: ResourceEditorProps) {
+class SourceEditor extends React.Component<SourceEditorProps, SourceEditorState>{
+    constructor(props: SourceEditorProps) {
         super(props);
 
         this.state = {
-            modificationState: this.props.resourceBeingEdited ? modification.editing : modification.inactive,
-            nameInputValue: (this.props.resourceBeingEdited?.name === undefined) ? "" : this.props.resourceBeingEdited.name,
-            linkInputValue: (this.props.resourceBeingEdited?.link === undefined) ? "" : this.props.resourceBeingEdited.link,
-            sourceInputValue: (this.props.resourceBeingEdited?.source === undefined) ? "" : this.props.resourceBeingEdited.source.name,
+            modificationState: this.props.sourceBeingEdited ? modification.editing : modification.inactive,
+            nameInputValue: this.props.sourceBeingEdited ? this.props.sourceBeingEdited.name : "",
+            linkInputValue: this.props.sourceBeingEdited ? this.props.sourceBeingEdited.link : ""
         }
     }
 
-    async deleteResource(deleteId: number){
-        await deleteResource(deleteId, true);
+    async deleteSource(deleteId: number){
+        await deleteSource(deleteId);
 
         this.cancelFunc();
         this.props.saveCallback();
     }
 
-    async saveModifiedResource(updateId: number | null) {
-        let newResource: ResourceDTO = {
+    async saveModifiedSource(updateId: number | null){
+        let newSource: SourceDTO = {
             name: this.state.nameInputValue,
-            link: this.state.linkInputValue,
-            source: this.state.sourceInputValue
+            link: this.state.linkInputValue
         }
 
-        if(newResource.name === ""){
+        if(newSource.name === ""){
             return;
         }
-
-        if(newResource.link === ""){
-            return;
-        }
-
-        if(newResource.source === ""){
+        if(newSource.link === ""){
             return;
         }
 
         if(updateId){
-            await updateResource(updateId, newResource);
+            await updateSource(updateId, newSource);
         }
         else{
-            await addResource(newResource);
+            await addSource(newSource);
         }
 
         this.cancelFunc();
         this.props.saveCallback();
     }
 
-    getSourceOptions() : Option[] {
-        let options: Option[] = [];
-
-        for(const source of this.props.allSources){
-            options.push({
-                label: source.name,
-                value: source.name
-            });
-        }
-
-        return options;
-    }
-
-    cancelFunc() {
+    cancelFunc(){
         this.setState({
             modificationState: modification.inactive,
             nameInputValue: "",
-            linkInputValue: "",
-            sourceInputValue: ""
+            linkInputValue: ""
         })
 
-        this.props.deactivateCallback()
+        this.props.deactivateCallback();
     }
 
     render() {
         return (
             <Row borderBottom={true} borderTop={true} width={"35%"} margin={"10px"} flexDirection={"column"}>
                 <Heading>
-                    Resource Editor:
+                    Source Editor:
                 </Heading>
 
                 <Row>
@@ -118,7 +94,7 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
                     <Button color={"red"}
                             disabled={!(this.state.modificationState === modification.editing)}
                             onClick={() => {
-                                this.deleteResource(this.props.resourceBeingEdited!.id)
+                                this.deleteSource(this.props.sourceBeingEdited!.id)
                             }}
                     >
                         Delete This Choice
@@ -145,27 +121,13 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
                     />
                 </Row>
 
-                <Row width={"60%"} margin={"10px"}>
-                    <Select autoComplete
-                            options={this.getSourceOptions()}
-                            disabled={this.state.modificationState === modification.inactive}
-                            value={this.state.sourceInputValue}
-                            label={"Source"}
-                            onChange={(newValue: string) => {
-                                this.setState({
-                                    sourceInputValue: newValue
-                                })
-                            }}
-                    />
-                </Row>
-
                 <Row flexJustify={"flex-end"} width={"100%"}>
                     <Button color={"green"} disabled={this.state.modificationState === modification.inactive} onClick={() => {
                         if(this.state.modificationState === modification.editing){
-                            this.saveModifiedResource(this.props.resourceBeingEdited!.id)
+                            this.saveModifiedSource(this.props.sourceBeingEdited!.id)
                         }
                         else{
-                            this.saveModifiedResource(null);
+                            this.saveModifiedSource(null);
                         }
                     }}>
                         Save
@@ -176,10 +138,9 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
                         Cancel
                     </Button>
                 </Row>
-
             </Row>
         );
     }
 }
 
-export default ResourceEditor;
+export default SourceEditor;

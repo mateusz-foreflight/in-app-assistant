@@ -1,12 +1,18 @@
-CREATE TYPE resource_source AS ENUM('PilotGuide', 'Jira', 'Confluence');
+CREATE TABLE IF NOT EXISTS
+    "source"
+(
+    "id"   SERIAL not null PRIMARY KEY,
+    "name" TEXT not null UNIQUE,
+    "link" TEXT not null
+);
 
 CREATE TABLE IF NOT EXISTS
     "resource"
 (
     "id"   SERIAL not null PRIMARY KEY,
     "name" TEXT not null UNIQUE,
-    "link" TEXT null,
-    "source" resource_source not null
+    "link" TEXT not null,
+    "source_id" INTEGER not null REFERENCES source
 );
 
 CREATE TABLE IF NOT EXISTS

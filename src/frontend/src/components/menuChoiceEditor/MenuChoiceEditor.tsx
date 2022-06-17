@@ -58,12 +58,8 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
             await addMenuChoice(newChoice);
         }
 
-        if(this.state.modificationState === modification.adding){
-            this.cancelFunc();
-        }
-        else {
-            this.props.deactivateCallback();
-        }
+
+        this.cancelFunc();
         this.props.saveCallback();
     }
 

@@ -1,5 +1,6 @@
 import MenuChoiceDTO from "./types/MenuChoiceDTO";
 import ResourceDTO from "./types/ResourceDTO";
+import SourceDTO from "./types/SourceDTO";
 
 const baseUrl = "http://localhost:8080/api/v1";
 
@@ -91,3 +92,18 @@ export const addResource = (newResource: ResourceDTO) =>
 
 export const deleteResource = (resourceId: number, force: boolean = false) =>
     fetch(baseUrl + `/resources/${resourceId}?force=${force}`, deleteOptions).then(checkStatus);
+
+
+
+// SOURCES
+export const getAllSources = () =>
+    fetch(baseUrl + "/sources").then(checkStatus);
+
+export const updateSource = (sourceId: number, newSource: SourceDTO) =>
+    fetch(baseUrl + `/sources/${sourceId}`, putOptions(newSource)).then(checkStatus);
+
+export const addSource = (newSource: SourceDTO) =>
+    fetch(baseUrl + "/sources", postOptions(newSource)).then(checkStatus);
+
+export const deleteSource = (sourceId: number)  =>
+    fetch(baseUrl + `/sources/${sourceId}`, deleteOptions).then(checkStatus);

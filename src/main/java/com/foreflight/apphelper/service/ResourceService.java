@@ -1,9 +1,11 @@
 package com.foreflight.apphelper.service;
 
+import com.foreflight.apphelper.domain.MenuChoice;
 import com.foreflight.apphelper.domain.Resource;
 import com.foreflight.apphelper.domain.ResourceDTO;
 import com.foreflight.apphelper.domain.Source;
 import com.foreflight.apphelper.repository.ResourceRepository;
+import com.foreflight.apphelper.repository.SourceRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +17,11 @@ import java.util.stream.Stream;
 @Service
 public class ResourceService {
     private final ResourceRepository resourceRepository;
+    private final SourceRepository sourceRepository;
 
-    public ResourceService(ResourceRepository resourceRepository) {
+    public ResourceService(ResourceRepository resourceRepository, SourceRepository sourceRepository) {
         this.resourceRepository = resourceRepository;
+        this.sourceRepository = sourceRepository;
     }
 
     // Get a list of all resources
@@ -77,20 +81,21 @@ public class ResourceService {
         if(dto.getName() == null){
             throw new IllegalStateException("Resource name must not be null");
         }
+        if(dto.getLink() == null){
+            throw new IllegalStateException("Resource link must not be null");
+        }
+        if(dto.getSource() == null){
+            throw new IllegalStateException("Resource source must not be null");
+        }
 
         resource.setName(dto.getName());
         resource.setLink(dto.getLink());
 
-        try {
-            resource.setSource(Source.valueOf(dto.getSource()));
-        } catch (IllegalArgumentException ex){
-            List<String> sourceNames = Stream.of(Source.values()).map(Source::name).collect(Collectors.toList());
-            throw new IllegalArgumentException("Invalid source name: \"" + dto.getSource() +
-                    "\". Name must be one of the following: " + sourceNames);
-        } catch (NullPointerException ex){
-            throw new IllegalArgumentException("Source name cannot be null.");
+        Optional<Source> newSource = sourceRepository.findSourceByName(dto.getSource());
+        if (!newSource.isPresent()) {
+            throw new IllegalStateException("No source with the provided name " + dto.getSource() + " exists");
         }
-
+        resource.setSource(newSource.get());
 
         return resource;
     }

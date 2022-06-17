@@ -22,7 +22,7 @@ class ResourceView extends React.Component<ResourceViewProps, {}>{
             let newRow: IRow = [];
             newRow.push(resource.name);
             newRow.push(resource.link);
-            newRow.push(resource.source);
+            newRow.push(resource.source.name);
             newRows.push(newRow);
         })
 

@@ -10,10 +10,6 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "resource")
-@TypeDef(
-        name = "pgsql_enum",
-        typeClass = PostgreSQLEnumType.class
-)
 public class Resource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,9 +22,10 @@ public class Resource {
     @Column
     private String link;
 
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "resource_source")
-    @Type( type = "pgsql_enum" )
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(
+            name = "source_id",
+            nullable = false)
     private Source source;
 
     public Resource() {
@@ -67,7 +64,6 @@ public class Resource {
     public Source getSource() {
         return source;
     }
-
     public void setSource(Source source) {
         this.source = source;
     }
@@ -91,7 +87,7 @@ public class Resource {
         sb.append("id=").append(id);
         sb.append(", name='").append(name).append('\'');
         sb.append(", link='").append(link).append('\'');
-        sb.append(", source='").append(source.name()).append('\'');
+        sb.append(", source='").append(source.getName()).append('\'');
         sb.append('}');
         return sb.toString();
     }

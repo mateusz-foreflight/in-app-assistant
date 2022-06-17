@@ -27,7 +27,7 @@ class ResourceList extends React.Component<ResourceListProps, {}>{
                   columnFuncs={[
                       resource => <>{resource.name}</>,
                       resource => <>{resource.link}</>,
-                      resource => <>{resource.source}</>
+                      resource => <>{resource.source.name}</>
                   ]}
               />
           </>
