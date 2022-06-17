@@ -22,4 +22,23 @@ public interface MenuChoiceRepository extends JpaRepository<MenuChoice, Long> {
             nativeQuery = true)
     List<MenuChoice> findChildMenuChoicesById(Long id);
 
+
+    @Query(
+            value = "WITH RECURSIVE " +
+                    "    q AS " +
+                    "    ( " +
+                    "        SELECT  id " +
+                    "        FROM    menuchoice mc_p " +
+                    "        WHERE   id = ?1 " +
+                    "        UNION ALL " +
+                    "        SELECT  mc_c.id " +
+                    "        FROM    q " +
+                    "        JOIN    menuchoice mc_c " +
+                    "        ON      mc_c.parent_id = q.id " +
+                    "    ) " +
+                    "SELECT * " +
+                    "FROM q",
+            nativeQuery = true
+    )
+    List<MenuChoice> findDescendentMenuChoicesById(Long id);
 }

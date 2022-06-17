@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -60,6 +61,12 @@ public class MenuChoiceService {
 
         return menuChoiceRepository.findMenuChoiceById(id)
                 .map(foundChoice ->{
+                    if(checkDescendent(newChoice.getParent(), foundChoice)){
+                        throw new IllegalStateException("Cannot update menu choice's parent name to " +
+                                newChoice.getParent().getName() + " because that would result in a circular " +
+                                "parent-child relationship.");
+                    }
+
                     foundChoice.setName(newChoice.getName());
                     foundChoice.setParent(newChoice.getParent());
                     foundChoice.setResources(newChoice.getResources());
@@ -107,5 +114,18 @@ public class MenuChoiceService {
         choice.setResources(newResources);
 
         return choice;
+    }
+
+    // Check if choiceA is a descendent of choiceB
+    private boolean checkDescendent(MenuChoice choiceA, MenuChoice choiceB){
+        List<MenuChoice> descendents = menuChoiceRepository.findDescendentMenuChoicesById(choiceB.getId());
+
+        for(MenuChoice descendent : descendents){
+            if(descendent.getId().equals(choiceA.getId())){
+                return true;
+            }
+        }
+
+        return false;
     }
 }
