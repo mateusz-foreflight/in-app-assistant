@@ -5,6 +5,7 @@ import MenuChoice from "../types/MenuChoice";
 import MenuChoiceWithChildren from "../types/MenuChoiceWithChildren";
 import MenuChoiceEditor from "../components/menuChoiceEditor/MenuChoiceEditor";
 import Resource from "../types/Resource";
+import Navbar from "../components/navbar/Navbar";
 
 type MenuModificationPageState = {
     choices: MenuChoiceWithChildren[];
@@ -65,7 +66,8 @@ class MenuModificationPage extends React.Component<{}, MenuModificationPageState
     render() {
         return (
             <div>
-                Menu Modification:
+                <Navbar activePage={1}/>
+
                 <MenuChoiceEditor key={this.state.selectedChoice?.id}
                                   choiceBeingEdited={this.state.selectedChoice}
                                   allChoices={this.state.choices}

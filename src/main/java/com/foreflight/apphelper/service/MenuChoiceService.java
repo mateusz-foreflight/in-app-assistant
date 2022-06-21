@@ -6,6 +6,7 @@ import com.foreflight.apphelper.domain.Resource;
 import com.foreflight.apphelper.repository.MenuChoiceRepository;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -79,11 +80,22 @@ public class MenuChoiceService {
     }
 
     // Delete menu choice by id
-    public void deleteChoice(Long id) {
+    public void deleteChoice(Long id, boolean force) {
         if(!menuChoiceRepository.existsById(id)){
             throw new IllegalStateException("Menu choice with the id " + id + " does not exist.");
         }
-        menuChoiceRepository.deleteById(id);
+
+        if(force){
+            cascadingDelete(id);
+            return;
+        }
+
+        try{
+            menuChoiceRepository.deleteById(id);
+        } catch (DataIntegrityViolationException ex){
+            throw new IllegalStateException("Cannot delete Menu Choice with id " + id + " because the choice has " +
+                    "children. Try using a force delete.");
+        }
     }
 
     // Create a MenuChoice object using a data transfer object
@@ -127,5 +139,20 @@ public class MenuChoiceService {
         }
 
         return false;
+    }
+
+    private void cascadingDelete(Long targetId){
+        List<MenuChoice> children = menuChoiceRepository.findChildMenuChoicesById(targetId);
+
+        if(children.size() <= 0){
+            menuChoiceRepository.deleteById(targetId);
+            return;
+        }
+
+        for(MenuChoice child : children){
+            cascadingDelete(child.getId());
+        }
+
+        menuChoiceRepository.deleteById(targetId);
     }
 }

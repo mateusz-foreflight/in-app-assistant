@@ -111,7 +111,7 @@ class MenuPreview extends React.Component<{}, MenuPreviewState>{
         return(
             <div>
                 {this.state.choices.map((choiceRow, rowIdx) =>(
-                    <Row key={rowIdx}>
+                    <Row key={rowIdx} margin={"10px"}>
                         {choiceRow.map((choice, choiceIdx) => (
                             <Button color={choice.selected ? "green" : "blue"} key={choice.id} onClick={() => {
                                 this.buttonClick(rowIdx, choiceIdx)

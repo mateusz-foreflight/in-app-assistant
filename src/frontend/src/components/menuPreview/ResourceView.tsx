@@ -1,5 +1,5 @@
 import React from "react";
-import {IColumn, IRow, SortableTable} from "@foreflight/ffui";
+import {IColumn, IRow, Row, SortableTable} from "@foreflight/ffui";
 import Resource from "../../types/Resource";
 
 type ResourceViewProps = {
@@ -31,9 +31,11 @@ class ResourceView extends React.Component<ResourceViewProps, {}>{
 
     render(){
         return(
-            <>
-                <SortableTable tableRows={this.resourcesToRows(this.props.resources)} tableColumns={this.resourceCols}/>
-            </>
+            <Row margin={"10px"}>
+                <SortableTable
+                    tableRows={this.resourcesToRows(this.props.resources)}
+                    tableColumns={this.resourceCols}/>
+            </Row>
         )
     }
 }

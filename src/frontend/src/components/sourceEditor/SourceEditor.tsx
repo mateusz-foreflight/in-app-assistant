@@ -1,7 +1,7 @@
 import React from "react";
 import Source from "../../types/Source";
-import {Button, Heading, Row, TextInput} from "@foreflight/ffui";
-import {addResource, addSource, deleteSource, updateResource, updateSource} from "../../client";
+import {Button, Heading, IError, Row, TextInput} from "@foreflight/ffui";
+import {addSource, deleteSource, updateSource} from "../../client";
 import SourceDTO from "../../types/SourceDTO";
 
 enum modification {
@@ -19,7 +19,9 @@ type SourceEditorProps = {
 type SourceEditorState = {
     modificationState: modification
     nameInputValue: string
+    nameInputErrors: IError[]
     linkInputValue: string
+    linkInputErrors: IError[]
 }
 
 class SourceEditor extends React.Component<SourceEditorProps, SourceEditorState>{
@@ -29,12 +31,25 @@ class SourceEditor extends React.Component<SourceEditorProps, SourceEditorState>
         this.state = {
             modificationState: this.props.sourceBeingEdited ? modification.editing : modification.inactive,
             nameInputValue: this.props.sourceBeingEdited ? this.props.sourceBeingEdited.name : "",
-            linkInputValue: this.props.sourceBeingEdited ? this.props.sourceBeingEdited.link : ""
+            linkInputValue: this.props.sourceBeingEdited ? this.props.sourceBeingEdited.link : "",
+            nameInputErrors: [],
+            linkInputErrors: []
         }
     }
 
     async deleteSource(deleteId: number){
-        await deleteSource(deleteId);
+        let deleteFailed = false;
+        await deleteSource(deleteId, false).catch(() => deleteFailed = true);
+
+        if(deleteFailed){
+            if(window.confirm("Warning:\nDeleting this source will result in all resources that use it being removed " +
+                "as well.\n\nDelete anyway?")){
+                await deleteSource(deleteId, true);
+            }
+            else{
+                return;
+            }
+        }
 
         this.cancelFunc();
         this.props.saveCallback();
@@ -46,10 +61,34 @@ class SourceEditor extends React.Component<SourceEditorProps, SourceEditorState>
             link: this.state.linkInputValue
         }
 
+        // Check for input errors
+        let errorOccured: boolean = false;
+
         if(newSource.name === ""){
-            return;
+            this.setState({
+                nameInputErrors: [{type: "error", message: "Name cannot be blank"}]
+            })
+            errorOccured = true;
         }
+        else{
+            this.setState({
+                nameInputErrors: []
+            })
+        }
+
         if(newSource.link === ""){
+            this.setState({
+                linkInputErrors: [{type: "error", message: "Link cannot be blank"}]
+            })
+            errorOccured = true;
+        }
+        else{
+            this.setState({
+                linkInputErrors: []
+            })
+        }
+
+        if(errorOccured){
             return;
         }
 
@@ -105,6 +144,7 @@ class SourceEditor extends React.Component<SourceEditorProps, SourceEditorState>
                     <TextInput label={"Name"}
                                disabled={this.state.modificationState === modification.inactive}
                                value={this.state.nameInputValue}
+                               errors={this.state.nameInputErrors}
                                onChange={newValue => {
                                    this.setState({nameInputValue: newValue})
                                }}
@@ -115,6 +155,7 @@ class SourceEditor extends React.Component<SourceEditorProps, SourceEditorState>
                     <TextInput label={"Link"}
                                disabled={this.state.modificationState === modification.inactive}
                                value={this.state.linkInputValue}
+                               errors={this.state.linkInputErrors}
                                onChange={newValue => {
                                    this.setState({linkInputValue: newValue})
                                }}

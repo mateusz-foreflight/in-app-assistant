@@ -1,8 +1,11 @@
 package com.foreflight.apphelper.service;
 
+import com.foreflight.apphelper.domain.Resource;
 import com.foreflight.apphelper.domain.Source;
 import com.foreflight.apphelper.domain.SourceDTO;
+import com.foreflight.apphelper.repository.ResourceRepository;
 import com.foreflight.apphelper.repository.SourceRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,9 +14,14 @@ import java.util.Optional;
 @Service
 public class SourceService {
     private final SourceRepository sourceRepository;
+    private final ResourceRepository resourceRepository;
+    private final ResourceService resourceService;
 
-    public SourceService(SourceRepository sourceRepository){
+    public SourceService(SourceRepository sourceRepository, ResourceService resourceService,
+                         ResourceRepository resourceRepository){
         this.sourceRepository = sourceRepository;
+        this.resourceService = resourceService;
+        this.resourceRepository = resourceRepository;
     }
 
     public List<Source> getAllSources() {
@@ -47,12 +55,27 @@ public class SourceService {
                 });
     }
 
-    public void deleteSource(Long id){
+    public void deleteSource(Long id, boolean force){
         if(!sourceRepository.existsById(id)){
             throw new IllegalStateException("Source with the id " + id + " does not exist.");
         }
 
-        sourceRepository.deleteById(id);
+        if(force){
+            // Get all resources that have this source and delete them
+            Optional<Source> source = sourceRepository.findSourceById(id);
+            assert(source.isPresent());
+            List<Resource> resources = resourceRepository.findResourcesBySource(source.get());
+            for(Resource resource : resources){
+                resourceService.deleteResource(resource.getId(), true);
+            }
+        }
+
+        try{
+            sourceRepository.deleteById(id);
+        } catch (DataIntegrityViolationException ex){
+            throw new IllegalStateException("Cannot delete Source with id " + id + " because the source has " +
+                    "resources that rely on it. Try using a force delete.");
+        }
     }
 
     private Source unpackDTO(SourceDTO dto){

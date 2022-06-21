@@ -4,6 +4,7 @@ import Resource from "../types/Resource";
 import {extract, getAllResources, getAllSources} from "../client";
 import ResourceEditor from "../components/resourceEditor/ResourceEditor";
 import Source from "../types/Source";
+import Navbar from "../components/navbar/Navbar";
 
 type ResourceModificationPageState = {
     resources: Resource[];
@@ -58,7 +59,8 @@ class ResourceModificationPage extends React.Component<{}, ResourceModificationP
     render() {
         return (
             <div>
-                Resource Modification:
+                <Navbar activePage={2}/>
+
                 <ResourceEditor
                     key={this.state.selectedResource?.id}
                     resourceBeingEdited={this.state.selectedResource}

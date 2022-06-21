@@ -232,7 +232,7 @@ public class MenuChoiceServiceTests {
         MockProfile1 mockProfile = new MockProfile1(menuChoiceRepository, resourceService);
 
         // When
-        menuChoiceService.deleteChoice(1L);
+        menuChoiceService.deleteChoice(1L, false);
 
         // Then
         verify(menuChoiceRepository).deleteById(1L);
@@ -245,7 +245,7 @@ public class MenuChoiceServiceTests {
 
         // When, Then
         assertThatExceptionOfType(IllegalStateException.class)
-                .isThrownBy(() -> menuChoiceService.deleteChoice(15L))
+                .isThrownBy(() -> menuChoiceService.deleteChoice(15L, false))
                 .withMessageContaining("id")
                 .withMessageContaining(String.valueOf(15));
     }

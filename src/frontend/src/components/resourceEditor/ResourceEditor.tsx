@@ -1,6 +1,6 @@
 import React from "react";
 import Resource from "../../types/Resource";
-import {Button, Heading, Option, Row, Select, TextInput} from "@foreflight/ffui";
+import {Button, Heading, IError, Option, Row, Select, TextInput} from "@foreflight/ffui";
 import {addResource, deleteResource, updateResource} from "../../client";
 import ResourceDTO from "../../types/ResourceDTO";
 import Source from "../../types/Source";
@@ -21,8 +21,11 @@ type ResourceEditorProps = {
 type ResourceEditorState = {
     modificationState: modification
     nameInputValue: string
+    nameInputErrors: IError[]
     linkInputValue: string
+    linkInputErrors: IError[]
     sourceInputValue: string
+    sourceInputErrors: IError[]
 }
 
 class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditorState>{
@@ -34,11 +37,25 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
             nameInputValue: (this.props.resourceBeingEdited?.name === undefined) ? "" : this.props.resourceBeingEdited.name,
             linkInputValue: (this.props.resourceBeingEdited?.link === undefined) ? "" : this.props.resourceBeingEdited.link,
             sourceInputValue: (this.props.resourceBeingEdited?.source === undefined) ? "" : this.props.resourceBeingEdited.source.name,
+            nameInputErrors: [],
+            linkInputErrors: [],
+            sourceInputErrors: []
         }
     }
 
     async deleteResource(deleteId: number){
-        await deleteResource(deleteId, true);
+        let deleteFailed = false;
+        await deleteResource(deleteId, false).catch(() => deleteFailed = true);
+
+        if(deleteFailed){
+            if(window.confirm("Warning:\nDeleting this resource will result in it being removed from all menu " +
+                "choices that use it.\n\nDelete anyway?")){
+                await deleteResource(deleteId, true)
+            }
+            else{
+                return;
+            }
+        }
 
         this.cancelFunc();
         this.props.saveCallback();
@@ -51,15 +68,46 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
             source: this.state.sourceInputValue
         }
 
+        // Check for input errors
+        let errorOccured = false;
+
         if(newResource.name === ""){
-            return;
+            this.setState({
+                nameInputErrors: [{type: "error", message: "Name cannot be blank"}]
+            })
+            errorOccured = true;
+        }
+        else{
+            this.setState({
+                nameInputErrors: []
+            })
         }
 
         if(newResource.link === ""){
-            return;
+            this.setState({
+                linkInputErrors: [{type: "error", message: "Link cannot be blank"}]
+            })
+            errorOccured = true;
+        }
+        else{
+            this.setState({
+                linkInputErrors: []
+            })
         }
 
         if(newResource.source === ""){
+            this.setState({
+                sourceInputErrors: [{type: "error", message: "Source cannot be blank"}]
+            })
+            errorOccured = true;
+        }
+        else{
+            this.setState({
+                sourceInputErrors: []
+            })
+        }
+
+        if(errorOccured){
             return;
         }
 
@@ -129,6 +177,7 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
                     <TextInput label={"Name"}
                                disabled={this.state.modificationState === modification.inactive}
                                value={this.state.nameInputValue}
+                               errors={this.state.nameInputErrors}
                                onChange={newValue => {
                                    this.setState({nameInputValue: newValue})
                                }}
@@ -139,6 +188,7 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
                     <TextInput label={"Link"}
                                disabled={this.state.modificationState === modification.inactive}
                                value={this.state.linkInputValue}
+                               errors={this.state.linkInputErrors}
                                onChange={newValue => {
                                    this.setState({linkInputValue: newValue})
                                }}
@@ -151,6 +201,7 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
                             disabled={this.state.modificationState === modification.inactive}
                             value={this.state.sourceInputValue}
                             label={"Source"}
+                            errors={this.state.sourceInputErrors}
                             onChange={(newValue: string) => {
                                 this.setState({
                                     sourceInputValue: newValue

@@ -3,6 +3,7 @@ import SourceList from "../components/sourceList/SourceList";
 import Source from "../types/Source";
 import {extract, getAllSources} from "../client";
 import SourceEditor from "../components/sourceEditor/SourceEditor";
+import Navbar from "../components/navbar/Navbar";
 
 type SourceModificationState = {
     sources: Source[];
@@ -44,7 +45,8 @@ class SourceModificationPage extends React.Component<{}, SourceModificationState
     render() {
         return (
             <div>
-                Source Modification:
+                <Navbar activePage={3}/>
+
                 <SourceEditor
                     key={this.state.selectedSource?.id}
                     sourceBeingEdited={this.state.selectedSource}

@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, Option, Row, Select, TextInput, Heading} from "@foreflight/ffui";
+import {Button, Option, Row, Select, TextInput, Heading, IError} from "@foreflight/ffui";
 import MenuChoiceWithChildren from "../../types/MenuChoiceWithChildren";
 import {addMenuChoice, deleteMenuChoice, updateMenuChoice} from "../../client";
 import MenuChoiceDTO from "../../types/MenuChoiceDTO";
@@ -23,6 +23,7 @@ type MenuChoiceEditorProps = {
 type MenuChoiceEditorState = {
     modificationState: modification
     nameInputValue: string
+    nameInputErrors: IError[],
     parentNameInputValue: string | null
     resourceNames: string[]
 }
@@ -35,6 +36,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
         this.state = {
             modificationState: this.props.choiceBeingEdited ? modification.editing : modification.inactive,
             nameInputValue: (this.props.choiceBeingEdited?.name === undefined) ? "" : this.props.choiceBeingEdited.name,
+            nameInputErrors: [],
             parentNameInputValue: (this.props.choiceBeingEdited?.parent?.name === undefined) ? null : this.props.choiceBeingEdited.parent.name,
             resourceNames: (this.props.choiceBeingEdited?.resources === undefined) ? [] : this.props.choiceBeingEdited.resources.map(resource => resource.name)
         }
@@ -48,8 +50,15 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
         }
 
         if(newChoice.choiceName === ""){
+            this.setState({
+                nameInputErrors: [{type: "error", message: "Name cannot be blank"}]
+            })
             return;
         }
+
+        this.setState({
+            nameInputErrors: []
+        })
 
         if(updateId){
             await updateMenuChoice(updateId, newChoice);
@@ -64,7 +73,15 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
     }
 
     async deleteChoice(deleteId: number){
-        await deleteMenuChoice(deleteId);
+        if(this.props.choiceBeingEdited!.children.length > 0){
+            if(!window.confirm("Warning:\nDeleting this menu choice will result in all of its children being deleted " +
+                "as well.\n\nDelete anyway?")){
+                return;
+            }
+        }
+
+        await deleteMenuChoice(deleteId, true);
+
 
         this.props.deactivateCallback();
         this.props.saveCallback();
@@ -134,7 +151,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
         return (
           <Row borderBottom={true} borderTop={true} width={"35%"} margin={"10px"} flexDirection={"column"}>
               <Heading>
-                  Menu Choice Editor:
+                  Menu Editor:
               </Heading>
               <p>
                   Currently Editing: <span style={{color: "#3498DB"}}>{
@@ -165,6 +182,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
                   <TextInput label={"Name"}
                              disabled={this.state.modificationState === modification.inactive}
                              value={this.state.nameInputValue}
+                             errors={this.state.nameInputErrors}
                              onChange={newValue => {
                                  this.setState({nameInputValue: newValue})
                              }}

@@ -74,8 +74,8 @@ export const updateMenuChoice = (choiceId: number, newChoice: MenuChoiceDTO) =>
 export const addMenuChoice = (newChoice: MenuChoiceDTO) =>
     fetch(baseUrl + "/menuchoices", postOptions(newChoice)).then(checkStatus);
 
-export const deleteMenuChoice = (choiceId: number) =>
-    fetch(baseUrl + `/menuchoices/${choiceId}`, deleteOptions).then(checkStatus);
+export const deleteMenuChoice = (choiceId: number, force: boolean = false) =>
+    fetch(baseUrl + `/menuchoices/${choiceId}?force=${force}`, deleteOptions).then(checkStatus);
 
 
 
@@ -96,6 +96,7 @@ export const deleteResource = (resourceId: number, force: boolean = false) =>
 
 
 // SOURCES
+
 export const getAllSources = () =>
     fetch(baseUrl + "/sources").then(checkStatus);
 
@@ -105,5 +106,5 @@ export const updateSource = (sourceId: number, newSource: SourceDTO) =>
 export const addSource = (newSource: SourceDTO) =>
     fetch(baseUrl + "/sources", postOptions(newSource)).then(checkStatus);
 
-export const deleteSource = (sourceId: number)  =>
-    fetch(baseUrl + `/sources/${sourceId}`, deleteOptions).then(checkStatus);
+export const deleteSource = (sourceId: number, force: boolean = false)  =>
+    fetch(baseUrl + `/sources/${sourceId}?force=${force}`, deleteOptions).then(checkStatus);

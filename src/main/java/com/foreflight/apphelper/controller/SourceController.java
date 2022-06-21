@@ -38,7 +38,7 @@ public class SourceController {
     }
 
     @DeleteMapping(path="{sourceId}")
-    public void deleteSource(@PathVariable("sourceId") Long id){
-        sourceService.deleteSource(id);
+    public void deleteSource(@PathVariable("sourceId") Long id, @RequestParam(defaultValue = "false") boolean force){
+        sourceService.deleteSource(id, force);
     }
 }

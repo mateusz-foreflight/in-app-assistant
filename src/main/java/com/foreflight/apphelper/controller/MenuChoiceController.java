@@ -51,8 +51,8 @@ public class MenuChoiceController {
 
     // Delete menu choice by id
     @DeleteMapping(path = "{choiceId}")
-    public void deleteChoice(@PathVariable("choiceId") Long id) {
-        menuChoiceService.deleteChoice(id);
+    public void deleteChoice(@PathVariable("choiceId") Long id, @RequestParam(defaultValue = "false") boolean force) {
+        menuChoiceService.deleteChoice(id, force);
     }
 
 }
