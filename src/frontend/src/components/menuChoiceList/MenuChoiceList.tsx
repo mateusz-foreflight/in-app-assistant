@@ -6,6 +6,7 @@ import SelectableList from "../selectableList/SelectableList";
 type MenuChoiceListProps = {
     choices: MenuChoiceWithChildren[];
     selectCallback: (choice: MenuChoiceWithChildren) => void;
+    searchCallback: (searchVal: string) => void;
     selectedChoiceId: number | null;
 }
 
@@ -24,6 +25,7 @@ class MenuChoiceList extends React.Component<MenuChoiceListProps, {}>{
                     getIdFunc={choice => choice.id}
                     selectedItemId={this.props.selectedChoiceId}
                     selectCallback={this.props.selectCallback}
+                    searchCallback={this.props.searchCallback}
                     columnFuncs={[
                         choice => <>{choice.name}</>,
                         choice => <>{choice.parent ? choice.parent.name : ""}</>,

@@ -8,6 +8,8 @@ import Navbar from "../components/navbar/Navbar";
 type SourceModificationState = {
     sources: Source[];
     selectedSource: Source | null;
+    searchVal: string
+    displayedSources: Source[]
 }
 
 class SourceModificationPage extends React.Component<{}, SourceModificationState>{
@@ -16,7 +18,9 @@ class SourceModificationPage extends React.Component<{}, SourceModificationState
 
         this.state = {
             sources: [],
-            selectedSource: null
+            selectedSource: null,
+            searchVal: "",
+            displayedSources: []
         }
     }
 
@@ -32,6 +36,20 @@ class SourceModificationPage extends React.Component<{}, SourceModificationState
         })
     }
 
+    updateDisplayedSources() {
+        let displayedSources: Source[] = [];
+
+        for(const source of this.state.sources){
+            if(source.name.search(new RegExp(`${this.state.searchVal}`, "i")) >= 0){
+                displayedSources.push(source);
+            }
+        }
+
+        this.setState({
+            displayedSources: displayedSources
+        })
+    }
+
     deselectSource = () => {
         this.setState({
             selectedSource: null
@@ -40,6 +58,12 @@ class SourceModificationPage extends React.Component<{}, SourceModificationState
 
     async componentDidMount() {
         await this.updateSources();
+    }
+
+    componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<SourceModificationState>) {
+        if(this.state.searchVal !== prevState.searchVal || this.state.sources !== prevState.sources){
+            this.updateDisplayedSources();
+        }
     }
 
     render() {
@@ -54,8 +78,9 @@ class SourceModificationPage extends React.Component<{}, SourceModificationState
                     saveCallback={this.updateSources}
                 />
                 <SourceList
-                    sources={this.state.sources}
+                    sources={this.state.displayedSources}
                     selectCallback={this.updateSelectedSource}
+                    searchCallback={searchVal => this.setState({searchVal: searchVal})}
                     selectedSourceId={this.state.selectedSource ? this.state.selectedSource.id : null}
                 />
             </div>

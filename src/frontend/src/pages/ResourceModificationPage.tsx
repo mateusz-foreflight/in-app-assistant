@@ -10,6 +10,8 @@ type ResourceModificationPageState = {
     resources: Resource[];
     sources: Source[];
     selectedResource: Resource | null;
+    searchVal: string;
+    displayedResources: Resource[]
 }
 
 class ResourceModificationPage extends React.Component<{}, ResourceModificationPageState>{
@@ -19,13 +21,13 @@ class ResourceModificationPage extends React.Component<{}, ResourceModificationP
         this.state = {
             resources: [],
             sources: [],
-            selectedResource: null
+            selectedResource: null,
+            searchVal: "",
+            displayedResources: []
         }
     }
 
     updateResources = async () => {
-        console.log(await extract<Resource>(getAllResources()))
-
         this.setState({
             resources: await extract<Resource>(getAllResources())
         });
@@ -43,11 +45,31 @@ class ResourceModificationPage extends React.Component<{}, ResourceModificationP
         });
     }
 
+    updateDisplayedResources() {
+        let displayResources: Resource[] = [];
+
+        for(const resource of this.state.resources){
+            if(resource.name.search(new RegExp(`${this.state.searchVal}`, "i")) >= 0){
+                displayResources.push(resource);
+            }
+        }
+
+        this.setState({
+            displayedResources: displayResources
+        })
+    }
+
     async componentDidMount() {
         await this.updateResources();
 
 
         await this.updateSources();
+    }
+
+    componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<ResourceModificationPageState>) {
+        if(this.state.searchVal !== prevState.searchVal || this.state.resources !== prevState.resources){
+            this.updateDisplayedResources();
+        }
     }
 
     deselectResource = () => {
@@ -69,8 +91,9 @@ class ResourceModificationPage extends React.Component<{}, ResourceModificationP
                     allSources={this.state.sources}
                 />
                 <ResourceList
-                    resources={this.state.resources}
+                    resources={this.state.displayedResources}
                     selectCallback={this.updateSelectedResource}
+                    searchCallback={searchVal => this.setState({searchVal: searchVal})}
                     selectedResourceId={this.state.selectedResource ? this.state.selectedResource.id : null}
                 />
             </div>

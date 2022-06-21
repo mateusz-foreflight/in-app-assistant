@@ -11,6 +11,8 @@ type MenuModificationPageState = {
     choices: MenuChoiceWithChildren[];
     resources: Resource[];
     selectedChoice: MenuChoiceWithChildren | null;
+    searchVal: string;
+    displayedChoices: MenuChoiceWithChildren[];
 }
 
 class MenuModificationPage extends React.Component<{}, MenuModificationPageState>{
@@ -20,7 +22,9 @@ class MenuModificationPage extends React.Component<{}, MenuModificationPageState
         this.state = {
             choices: [],
             resources: [],
-            selectedChoice: null
+            selectedChoice: null,
+            searchVal: "",
+            displayedChoices: []
         }
     }
 
@@ -46,9 +50,28 @@ class MenuModificationPage extends React.Component<{}, MenuModificationPageState
         })
     }
 
+    updateDisplayedChoices = () => {
+        let displayedChoices: MenuChoiceWithChildren[] = [];
+        for(const choice of this.state.choices){
+            if(choice.name.search(new RegExp(`${this.state.searchVal}`, "i")) >= 0){
+                displayedChoices.push(choice);
+            }
+        }
+
+        this.setState({
+            displayedChoices: displayedChoices
+        })
+    }
+
     async componentDidMount() {
         await this.updateChoices();
         await this.updateResources();
+    }
+
+    componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<MenuModificationPageState>) {
+        if(this.state.searchVal !== prevState.searchVal || this.state.choices !== prevState.choices){
+            this.updateDisplayedChoices();
+        }
     }
 
     updateSelectedChoice = (newChoice: MenuChoiceWithChildren) => {
@@ -75,8 +98,9 @@ class MenuModificationPage extends React.Component<{}, MenuModificationPageState
                                   deactivateCallback={this.deselectChoice}
                                   saveCallback={this.updateChoices}>
                 </MenuChoiceEditor>
-                <MenuChoiceList choices={this.state.choices}
+                <MenuChoiceList choices={this.state.displayedChoices}
                                 selectCallback={this.updateSelectedChoice}
+                                searchCallback={searchVal => this.setState({searchVal: searchVal})}
                                 selectedChoiceId={this.state.selectedChoice ? this.state.selectedChoice.id : null}>
                 </MenuChoiceList>
             </div>

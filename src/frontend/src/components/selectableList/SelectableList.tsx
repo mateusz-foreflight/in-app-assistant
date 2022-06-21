@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, Row, Table, TBody, Td, TdHeader, THead, Tr} from "@foreflight/ffui";
+import {Button, Row, Search, Table, TBody, Td, TdHeader, TextInput, THead, Tr} from "@foreflight/ffui";
 
 type SelectableListProps<T> = {
     columnNames: string[]
@@ -7,15 +7,35 @@ type SelectableListProps<T> = {
     getIdFunc: (item: T) => number;
     selectedItemId: number | null;
     selectCallback: (item: T) => void;
+    // Called when the value being searched for changes, can be used to update the items prop
+    searchCallback: (searchVal: string) => void;
     columnFuncs: {(item: T) : JSX.Element;}[];
 }
 
-class SelectableList<T> extends React.Component<SelectableListProps<T>, { }>{
+type SelectableListState = {
+    searchValue: string;
+}
+
+class SelectableList<T> extends React.Component<SelectableListProps<T>, SelectableListState>{
+    constructor(props: SelectableListProps<T>) {
+        super(props);
+
+        this.state = {
+            searchValue: ""
+        }
+    }
 
     render() {
         return (
             <>
-                <Row width={"35%"}>
+                <Row width={"35%"} flexDirection={"column"}>
+                    <TextInput value="" placeholder="Search"
+                               onChange={newValue => {
+                                   this.props.searchCallback(newValue);
+                                   this.setState({searchValue: newValue})
+                               }}
+                    />
+
                     <Table striped={true}>
                         <THead>
                             <Tr>

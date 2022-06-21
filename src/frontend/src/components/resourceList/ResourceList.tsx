@@ -6,7 +6,12 @@ import Resource from "../../types/Resource";
 type ResourceListProps = {
     resources: Resource[];
     selectCallback: (resource: Resource) => void;
+    searchCallback: (searchVal: string) => void;
     selectedResourceId: number | null;
+}
+
+type ResourceListState = {
+    searchedResources: Resource[];
 }
 
 class ResourceList extends React.Component<ResourceListProps, {}>{
@@ -24,6 +29,7 @@ class ResourceList extends React.Component<ResourceListProps, {}>{
                   getIdFunc={resource => resource.id}
                   selectedItemId={this.props.selectedResourceId}
                   selectCallback={this.props.selectCallback}
+                  searchCallback={this.props.searchCallback}
                   columnFuncs={[
                       resource => <>{resource.name}</>,
                       resource => <>{resource.link}</>,

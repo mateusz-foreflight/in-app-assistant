@@ -6,6 +6,7 @@ import Source from "../../types/Source";
 type SourceListProps = {
     sources: Source[];
     selectCallback: (source: Source) => void;
+    searchCallback: (searchVal: string) => void;
     selectedSourceId: number | null;
 }
 
@@ -24,6 +25,7 @@ class SourceList extends React.Component<SourceListProps, {}>{
                     getIdFunc={source => source.id}
                     selectedItemId={this.props.selectedSourceId}
                     selectCallback={this.props.selectCallback}
+                    searchCallback={this.props.searchCallback}
                     columnFuncs={[
                         source => <>{source.name}</>,
                         source => <>{source.link}</>,
