@@ -30,3 +30,29 @@ CREATE TABLE IF NOT EXISTS
     "resource_id"   INTEGER not null REFERENCES resource,
     PRIMARY KEY (menuchoice_id, resource_id)
 );
+
+CREATE TABLE IF NOT EXISTS
+    "metric"
+(
+    "id"               SERIAL not null PRIMARY KEY,
+    "answer_found"     BOOLEAN not null,
+    "timestamp"        TIMESTAMPTZ(0),
+    "ticket_link"      TEXT,
+    "user_name"        TEXT
+);
+
+CREATE TABLE IF NOT EXISTS
+    "metric_menuchoice"
+(
+    "metric_id" INTEGER not null REFERENCES metric,
+    "menuchoice_id"   INTEGER not null REFERENCES menuchoice,
+    PRIMARY KEY (metric_id, menuchoice_id)
+);
+
+CREATE TABLE IF NOT EXISTS
+    "metric_resource"
+(
+    "metric_id" INTEGER not null REFERENCES metric,
+    "resource_id"   INTEGER not null REFERENCES resource,
+    PRIMARY KEY (metric_id, resource_id)
+);

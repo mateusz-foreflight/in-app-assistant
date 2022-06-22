@@ -98,6 +98,19 @@ public class MenuChoiceService {
         }
     }
 
+    public List<MenuChoice> namesToMenuChoices(List<String> menuchoiceNames){
+        List<MenuChoice> newChoices = new ArrayList<>();
+        for(String menuchoiceName : menuchoiceNames){
+            Optional<MenuChoice> newMenuchoice = menuChoiceRepository.findMenuChoiceByName(menuchoiceName);
+            if (!newMenuchoice.isPresent()){
+                throw new IllegalStateException("No menu choice with the provided name" + menuchoiceName + " exists");
+            }
+            newChoices.add(newMenuchoice.get());
+        }
+
+        return newChoices;
+    }
+
     // Create a MenuChoice object using a data transfer object
     private MenuChoice unpackDTO(MenuChoiceDTO dto){
         MenuChoice choice = new MenuChoice();
@@ -115,15 +128,7 @@ public class MenuChoiceService {
             choice.setParent(newParent.get());
         }
 
-        List<Resource> newResources = new ArrayList<>();
-        for(String resourceName : dto.getResourceNames()){
-            Optional<Resource> newResource = resourceService.getResourceByName(resourceName);
-            if (!newResource.isPresent()){
-                throw new IllegalStateException("No resource with the provided resource name" + resourceName + " exists");
-            }
-            newResources.add(newResource.get());
-        }
-        choice.setResources(newResources);
+        choice.setResources(resourceService.namesToResources(dto.getResourceNames()));
 
         return choice;
     }

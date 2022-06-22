@@ -9,6 +9,7 @@ import com.foreflight.apphelper.repository.SourceRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -72,6 +73,20 @@ public class ResourceService {
             throw new IllegalStateException("Cannot delete Resource with id " + id + " because the Resource is " +
                     "referenced by other entries. Try using a force delete.");
         }
+    }
+
+    public List<Resource> namesToResources(List<String> resourceNames){
+        List<Resource> newResources = new ArrayList<>();
+
+        for(String resourceName : resourceNames){
+            Optional<Resource> newResource = this.getResourceByName(resourceName);
+            if (!newResource.isPresent()){
+                throw new IllegalStateException("No resource with the provided resource name" + resourceName + " exists");
+            }
+            newResources.add(newResource.get());
+        }
+
+        return newResources;
     }
 
     // Create a Resource object using a data transfer object
