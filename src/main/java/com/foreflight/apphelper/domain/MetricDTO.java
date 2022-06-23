@@ -4,13 +4,14 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.tomcat.jni.Local;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public class MetricDTO {
     private Boolean answerFound;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime timestamp;
+    //@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private OffsetDateTime timestamp;
 
     private String ticketLink;
 
@@ -24,7 +25,7 @@ public class MetricDTO {
 
     public MetricDTO(){}
 
-    public MetricDTO(Boolean answerFound, LocalDateTime timestamp, String ticketLink, String userName, List<String> menuchoiceNames, List<String> resourceNames) {
+    public MetricDTO(Boolean answerFound, OffsetDateTime timestamp, String ticketLink, String userName, List<String> menuchoiceNames, List<String> resourceNames) {
         this.answerFound = answerFound;
         this.timestamp = timestamp;
         this.ticketLink = ticketLink;
@@ -41,11 +42,11 @@ public class MetricDTO {
         this.answerFound = answerFound;
     }
 
-    public LocalDateTime getTimestamp() {
+    public OffsetDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
+    public void setTimestamp(OffsetDateTime timestamp) {
         this.timestamp = timestamp;
     }
 

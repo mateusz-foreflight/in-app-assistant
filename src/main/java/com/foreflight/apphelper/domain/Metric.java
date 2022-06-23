@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -21,8 +22,8 @@ public class Metric implements Serializable {
     private Boolean answerFound;
 
     @Column(name = "timestamp")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime timestamp;
+    //@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private OffsetDateTime timestamp;
 
     @Column(name = "ticket_link")
     private String ticketLink;
@@ -46,7 +47,7 @@ public class Metric implements Serializable {
 
 
 
-    public Metric(Boolean answerFound, LocalDateTime timestamp, String ticketLink, String userName, List<MenuChoice> menuChoices, List<Resource> resources) {
+    public Metric(Boolean answerFound, OffsetDateTime timestamp, String ticketLink, String userName, List<MenuChoice> menuChoices, List<Resource> resources) {
         this.answerFound = answerFound;
         this.timestamp = timestamp;
         this.ticketLink = ticketLink;
@@ -74,11 +75,11 @@ public class Metric implements Serializable {
         this.answerFound = answerFound;
     }
 
-    public LocalDateTime getTimestamp() {
+    public OffsetDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
+    public void setTimestamp(OffsetDateTime timestamp) {
         this.timestamp = timestamp;
     }
 

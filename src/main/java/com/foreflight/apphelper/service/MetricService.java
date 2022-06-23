@@ -74,6 +74,7 @@ public class MetricService {
         }
         metric.setAnswerFound(dto.isAnswerFound());
 
+        System.out.println(dto.getTimestamp());
         metric.setTimestamp(dto.getTimestamp());
 
         metric.setTicketLink(dto.getTicketLink());

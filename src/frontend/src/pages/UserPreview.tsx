@@ -51,7 +51,7 @@ class UserPreview extends React.Component<{}, UserPreviewState> {
     }
 
     async generateMetric(answerFound: boolean, feedbackPresent: boolean) {
-        let timestamp = new Date().toISOString().slice(0,19).replace("T", " ");
+        let timestamp = new Date().toISOString();
 
         let menuchoiceNames: string[] = [];
         for(const choice of this.state.visitedChoiceNames){
