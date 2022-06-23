@@ -80,9 +80,13 @@ public class MetricService {
 
         metric.setUserName(dto.getUserName());
 
-        metric.setResources(resourceService.namesToResources(dto.getResourceNames()));
+        if(dto.getResourceNames() != null) {
+            metric.setResources(resourceService.namesToResources(dto.getResourceNames()));
+        }
 
-        metric.setMenuChoices(menuChoiceService.namesToMenuChoices(dto.getMenuchoiceNames()));
+        if(dto.getMenuchoiceNames() != null) {
+            metric.setMenuChoices(menuChoiceService.namesToMenuChoices(dto.getMenuchoiceNames()));
+        }
 
         return metric;
     }

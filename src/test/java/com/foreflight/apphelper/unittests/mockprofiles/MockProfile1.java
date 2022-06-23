@@ -31,7 +31,7 @@ public class MockProfile1{
     public MockProfile1(MenuChoiceRepository menuChoiceRepository, ResourceService resourceService){
         // SET UP DATA
         // Set up resources
-        this.resource1 = new Resource("resource1", "link1", Source.PilotGuide);
+        this.resource1 = new Resource("resource1", "link1", new Source("source", "sourcelink"));
         this.resource1.setId(1L);
         this.resources = new ArrayList<>();
         resources.add(resource1);

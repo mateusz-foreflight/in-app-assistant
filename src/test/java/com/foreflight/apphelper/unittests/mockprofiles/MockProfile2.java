@@ -27,9 +27,9 @@ public class MockProfile2 {
     public MockProfile2(ResourceRepository resourceRepository){
         // SET UP DATA
         // Set up resources
-        this.resource1 = new Resource("resource1", "link2", Source.PilotGuide);
+        this.resource1 = new Resource("resource1", "link2", new Source("source", "sourcelink"));
         this.resource1.setId(1L);
-        this.resource2 = new Resource("resource2", null, Source.PilotGuide);
+        this.resource2 = new Resource("resource2", null, new Source("source", "sourcelink"));
         this.resource2.setId(2L);
         this.resources = Arrays.asList(resource1, resource2);
 

@@ -1,6 +1,7 @@
 import MenuChoiceDTO from "./types/MenuChoiceDTO";
 import ResourceDTO from "./types/ResourceDTO";
 import SourceDTO from "./types/SourceDTO";
+import MetricDTO from "./types/MetricDTO";
 
 const baseUrl = "http://localhost:8080/api/v1";
 
@@ -108,3 +109,9 @@ export const addSource = (newSource: SourceDTO) =>
 
 export const deleteSource = (sourceId: number, force: boolean = false)  =>
     fetch(baseUrl + `/sources/${sourceId}?force=${force}`, deleteOptions).then(checkStatus);
+
+
+
+// METRICS
+export const addMetric = (newMetric: MetricDTO) =>
+    fetch(baseUrl + "/metrics", postOptions(newMetric)).then(checkStatus);

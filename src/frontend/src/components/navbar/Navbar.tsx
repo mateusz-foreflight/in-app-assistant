@@ -15,6 +15,7 @@ class Navbar extends React.Component<NavbarProps, {}>{
 
     pageLinks: pageLink[] = [
         {name: "Menu Preview", link: "/", id: 0},
+        {name: "User Preview", link: "/userPreview", id: 4},
         {name: "Menu Editor", link: "/menuModification", id: 1},
         {name: "Resource Editor", link: "/resourceModification", id: 2},
         {name: "Source Editor", link: "/sourceModification", id:3},

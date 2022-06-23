@@ -8,15 +8,20 @@ import Resource from "../../types/Resource";
 type MenuChoiceSelectable = MenuChoice &
     {selected: boolean}
 
+type MenuPreviewProps = {
+    visitMenuChoiceCallback?: (choice: MenuChoice) => void;
+    visitResourceCallback?: (resource: Resource) => void;
+}
+
 type MenuPreviewState = {
     choices: MenuChoiceSelectable[][],
     displayResourceView: boolean,
     resourcesToDisplay: Resource[]
 }
 
-class MenuPreview extends React.Component<{}, MenuPreviewState>{
+class MenuPreview extends React.Component<MenuPreviewProps, MenuPreviewState>{
 
-    constructor(props: {}) {
+    constructor(props: MenuPreviewProps) {
         super(props)
         this.state = {
             choices: [],
@@ -52,6 +57,10 @@ class MenuPreview extends React.Component<{}, MenuPreviewState>{
         // Ensure that state is not changed if a choice is already selected
         if(this.state.choices[row][choiceIdx].selected){
             return;
+        }
+
+        if(this.props.visitMenuChoiceCallback) {
+            this.props.visitMenuChoiceCallback(this.state.choices[row][choiceIdx] as MenuChoice);
         }
 
         // Get children of selected choice
@@ -123,7 +132,10 @@ class MenuPreview extends React.Component<{}, MenuPreviewState>{
                 ))}
 
                 {this.state.displayResourceView &&
-                    <ResourceView resources={this.state.resourcesToDisplay}></ResourceView>}
+                    <ResourceView
+                        resources={this.state.resourcesToDisplay}
+                        visitResourceCallback={this.props.visitResourceCallback}
+                    />}
             </div>
         );
     }
