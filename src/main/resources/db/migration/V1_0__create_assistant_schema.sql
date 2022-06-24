@@ -38,7 +38,8 @@ CREATE TABLE IF NOT EXISTS
     "answer_found"     BOOLEAN not null,
     "timestamp"        TIMESTAMPTZ(0),
     "ticket_link"      TEXT,
-    "user_name"        TEXT
+    "user_name"        TEXT,
+    "user_feedback"    TEXT
 );
 
 CREATE TABLE IF NOT EXISTS

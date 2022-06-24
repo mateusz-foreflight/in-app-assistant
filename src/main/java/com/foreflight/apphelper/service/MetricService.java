@@ -81,6 +81,8 @@ public class MetricService {
 
         metric.setUserName(dto.getUserName());
 
+        metric.setUserFeedback(dto.getUserFeedback());
+
         if(dto.getResourceNames() != null) {
             metric.setResources(resourceService.namesToResources(dto.getResourceNames()));
         }

@@ -17,7 +17,7 @@ type UserPreviewState = {
     visitedResourceNames: Set<string>
 }
 
-class UserPreview extends React.Component<{}, UserPreviewState> {
+class UserPreviewPage extends React.Component<{}, UserPreviewState> {
     constructor(props: {}) {
         super(props);
 
@@ -70,11 +70,10 @@ class UserPreview extends React.Component<{}, UserPreviewState> {
             timestamp: timestamp,
             ticketLink: "",
             userName: this.state.userName,
+            userFeedback: feedback,
             menuchoiceNames: menuchoiceNames,
             resourceNames: resourceNames
         }
-
-        console.log(metric)
 
         await addMetric(metric);
     }
@@ -197,4 +196,4 @@ class UserPreview extends React.Component<{}, UserPreviewState> {
     }
 }
 
-export default UserPreview;
+export default UserPreviewPage;

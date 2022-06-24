@@ -10,12 +10,13 @@ import java.util.List;
 public class MetricDTO {
     private Boolean answerFound;
 
-    //@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private OffsetDateTime timestamp;
 
     private String ticketLink;
 
     private String userName;
+
+    private String userFeedback;
 
     private List<String> menuchoiceNames;
 
@@ -25,11 +26,12 @@ public class MetricDTO {
 
     public MetricDTO(){}
 
-    public MetricDTO(Boolean answerFound, OffsetDateTime timestamp, String ticketLink, String userName, List<String> menuchoiceNames, List<String> resourceNames) {
+    public MetricDTO(Boolean answerFound, OffsetDateTime timestamp, String ticketLink, String userName, String userFeedback, List<String> menuchoiceNames, List<String> resourceNames) {
         this.answerFound = answerFound;
         this.timestamp = timestamp;
         this.ticketLink = ticketLink;
         this.userName = userName;
+        this.userFeedback = userFeedback;
         this.menuchoiceNames = menuchoiceNames;
         this.resourceNames = resourceNames;
     }
@@ -64,6 +66,14 @@ public class MetricDTO {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getUserFeedback() {
+        return userFeedback;
+    }
+
+    public void setUserFeedback(String userFeedback) {
+        this.userFeedback = userFeedback;
     }
 
     public List<String> getMenuchoiceNames() {

@@ -22,7 +22,6 @@ public class Metric implements Serializable {
     private Boolean answerFound;
 
     @Column(name = "timestamp")
-    //@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private OffsetDateTime timestamp;
 
     @Column(name = "ticket_link")
@@ -30,6 +29,9 @@ public class Metric implements Serializable {
 
     @Column(name = "user_name")
     private String userName;
+
+    @Column(name = "user_feedback")
+    private String userFeedback;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -47,11 +49,12 @@ public class Metric implements Serializable {
 
 
 
-    public Metric(Boolean answerFound, OffsetDateTime timestamp, String ticketLink, String userName, List<MenuChoice> menuChoices, List<Resource> resources) {
+    public Metric(Boolean answerFound, OffsetDateTime timestamp, String ticketLink, String userName, String userFeedback, List<MenuChoice> menuChoices, List<Resource> resources) {
         this.answerFound = answerFound;
         this.timestamp = timestamp;
         this.ticketLink = ticketLink;
         this.userName = userName;
+        this.userFeedback = userFeedback;
         this.menuChoices = menuChoices;
         this.resources = resources;
     }
@@ -99,6 +102,14 @@ public class Metric implements Serializable {
         this.userName = userName;
     }
 
+    public String getUserFeedback() {
+        return userFeedback;
+    }
+
+    public void setUserFeedback(String userFeedback) {
+        this.userFeedback = userFeedback;
+    }
+
     public List<MenuChoice> getMenuChoices() {
         return menuChoices;
     }
@@ -120,12 +131,12 @@ public class Metric implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Metric metric = (Metric) o;
-        return isAnswerFound() == metric.isAnswerFound() && getId().equals(metric.getId()) && Objects.equals(getTimestamp(), metric.getTimestamp()) && Objects.equals(getTicketLink(), metric.getTicketLink()) && Objects.equals(getUserName(), metric.getUserName()) && Objects.equals(getMenuChoices(), metric.getMenuChoices()) && Objects.equals(getResources(), metric.getResources());
+        return getId().equals(metric.getId()) && Objects.equals(answerFound, metric.answerFound) && Objects.equals(getTimestamp(), metric.getTimestamp()) && Objects.equals(getTicketLink(), metric.getTicketLink()) && Objects.equals(getUserName(), metric.getUserName()) && Objects.equals(userFeedback, metric.userFeedback) && Objects.equals(getMenuChoices(), metric.getMenuChoices()) && Objects.equals(getResources(), metric.getResources());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), isAnswerFound(), getTimestamp(), getTicketLink(), getUserName(), getMenuChoices(), getResources());
+        return Objects.hash(getId(), answerFound, getTimestamp(), getTicketLink(), getUserName(), userFeedback, getMenuChoices(), getResources());
     }
 
     @Override
@@ -136,6 +147,7 @@ public class Metric implements Serializable {
         sb.append(", timestamp=").append(timestamp);
         sb.append(", ticketLink='").append(ticketLink).append('\'');
         sb.append(", userName='").append(userName).append('\'');
+        sb.append(", userFeedback='").append(userFeedback).append('\'');
         sb.append(", menuChoices=").append(menuChoices);
         sb.append(", resources=").append(resources);
         sb.append('}');
