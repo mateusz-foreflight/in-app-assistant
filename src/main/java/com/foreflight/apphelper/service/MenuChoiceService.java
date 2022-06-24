@@ -62,7 +62,7 @@ public class MenuChoiceService {
 
         return menuChoiceRepository.findMenuChoiceById(id)
                 .map(foundChoice ->{
-                    if(checkDescendent(newChoice.getParent(), foundChoice)){
+                    if(newChoice.getParent() != null && checkDescendent(newChoice.getParent(), foundChoice)){
                         throw new IllegalStateException("Cannot update menu choice's parent name to " +
                                 newChoice.getParent().getName() + " because that would result in a circular " +
                                 "parent-child relationship.");

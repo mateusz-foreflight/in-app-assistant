@@ -1,5 +1,18 @@
 import React from "react";
-import {Button, Row, Search, Table, TBody, Td, TdHeader, TextInput, THead, Tr} from "@foreflight/ffui";
+import {
+    Button,
+    IColumn, IRow, IRowElement, IRowElementObject,
+    Row,
+    Search,
+    SortableTable,
+    Table,
+    TBody,
+    Td,
+    TdHeader,
+    TextInput,
+    THead,
+    Tr
+} from "@foreflight/ffui";
 
 type SelectableListProps<T> = {
     columnNames: string[]
@@ -9,7 +22,7 @@ type SelectableListProps<T> = {
     selectCallback: (item: T) => void;
     // Called when the value being searched for changes, can be used to update the items prop
     searchCallback: (searchVal: string) => void;
-    columnFuncs: {(item: T) : JSX.Element;}[];
+    columnFuncs: {(item: T) : IRowElement}[];
 }
 
 type SelectableListState = {
@@ -25,6 +38,42 @@ class SelectableList<T> extends React.Component<SelectableListProps<T>, Selectab
         }
     }
 
+    columnNamesToColumns(names: string[]) : IColumn[] {
+        let cols: IColumn[] = [];
+        cols.push({name: ""}) // For select button
+
+        for(const name of names){
+            cols.push({name: name});
+        }
+        return cols;
+    }
+
+    itemsToRows(items: T[]) : IRow[] {
+        let rows: IRow[] = [];
+
+        items.forEach((item) => {
+            let row: IRow = [];
+
+            // Add select button to each row
+            row.push({raw:
+                <Button
+                    small
+                    color={this.props.selectedItemId === this.props.getIdFunc(item) ? "green" : "blue"}
+                    onClick={() => this.props.selectCallback(item)}
+                >
+                    Select
+                </Button>
+            })
+
+            this.props.columnFuncs.forEach((func) => {
+                row.push(func(item));
+            })
+
+            rows.push(row);
+        })
+        return rows;
+    }
+
     render() {
         return (
             <>
@@ -36,35 +85,10 @@ class SelectableList<T> extends React.Component<SelectableListProps<T>, Selectab
                                }}
                     />
 
-                    <Table striped={true}>
-                        <THead>
-                            <Tr>
-                                <TdHeader defaultWidth={"5px"}></TdHeader>
-                                {this.props.columnNames.map(column => (
-                                    <TdHeader key={column}>{column}</TdHeader>
-                                ))}
-                            </Tr>
-                        </THead>
-                        <TBody>
-                            {this.props.items.map((item) => (
-                                <Tr key={this.props.getIdFunc(item)}>
-                                    <Td>
-                                        <Button small color={this.props.selectedItemId === this.props.getIdFunc(item) ? "green" : "blue"} onClick={() => {
-                                            this.props.selectCallback(item);
-                                        }}>
-                                            Select
-                                        </Button>
-                                    </Td>
-
-                                    {this.props.columnFuncs.map((columnFunc, idx) => (
-                                        <Td key={idx}>
-                                            {columnFunc(item)}
-                                        </Td>
-                                    ))}
-                                </Tr>
-                            ))}
-                        </TBody>
-                    </Table>
+                    <SortableTable
+                        tableRows={this.itemsToRows(this.props.items)}
+                        tableColumns={this.columnNamesToColumns(this.props.columnNames)}
+                    />
                 </Row>
             </>
         );

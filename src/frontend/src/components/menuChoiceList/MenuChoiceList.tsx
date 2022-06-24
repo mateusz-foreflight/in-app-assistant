@@ -27,14 +27,22 @@ class MenuChoiceList extends React.Component<MenuChoiceListProps, {}>{
                     selectCallback={this.props.selectCallback}
                     searchCallback={this.props.searchCallback}
                     columnFuncs={[
-                        choice => <>{choice.name}</>,
-                        choice => <>{choice.parent ? choice.parent.name : ""}</>,
-                        choice => <>{choice.children.map((child) => (
+                        choice => choice.name,
+                        choice => choice.parent ? choice.parent.name : "",
+                        choice => {
+                            return {raw:
+                                    <>{choice.children.map((child) => (
                                         <div key={child.id}>{child.name}</div>
-                                    ))}</>,
-                        choice => <>{choice.resources.map((resource) => (
+                                    ))}</>
+                            };
+                        },
+                        choice => {
+                            return {raw:
+                                    <>{choice.resources.map((resource) => (
                                         <div key={resource.id}>{resource.name}</div>
-                                     ))}</>
+                                    ))}</>
+                            };
+                        }
                     ]}
                 />
             </>

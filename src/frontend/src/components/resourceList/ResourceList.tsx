@@ -31,9 +31,9 @@ class ResourceList extends React.Component<ResourceListProps, {}>{
                   selectCallback={this.props.selectCallback}
                   searchCallback={this.props.searchCallback}
                   columnFuncs={[
-                      resource => <>{resource.name}</>,
-                      resource => <>{resource.link}</>,
-                      resource => <>{resource.source.name}</>
+                      resource => resource.name,
+                      resource => resource.link,
+                      resource => resource.source.name
                   ]}
               />
           </>

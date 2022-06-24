@@ -27,8 +27,8 @@ class SourceList extends React.Component<SourceListProps, {}>{
                     selectCallback={this.props.selectCallback}
                     searchCallback={this.props.searchCallback}
                     columnFuncs={[
-                        source => <>{source.name}</>,
-                        source => <>{source.link}</>,
+                        source => source.name,
+                        source => source.link
                     ]}
                 />
             </>
