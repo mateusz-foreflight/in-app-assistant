@@ -19,6 +19,7 @@ class Navbar extends React.Component<NavbarProps, {}>{
         {name: "Menu Editor", link: "/menuModification", id: 1},
         {name: "Resource Editor", link: "/resourceModification", id: 2},
         {name: "Source Editor", link: "/sourceModification", id:3},
+        {name: "Metrics Overview", link: "/metrics", id: 5},
     ]
 
     render() {

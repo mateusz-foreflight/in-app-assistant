@@ -6,6 +6,7 @@ import MenuModificationPage from "./pages/MenuModificationPage";
 import ResourceModificationPage from "./pages/ResourceModificationPage";
 import SourceModificationPage from "./pages/SourceModificationPage";
 import UserPreviewPage from "./pages/UserPreviewPage";
+import MetricsPage from "./pages/MetricsPage";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route path="/menuModification" element={<MenuModificationPage/>}/>
             <Route path="/resourceModification" element={<ResourceModificationPage/>}/>
             <Route path="/sourceModification" element={<SourceModificationPage/>}/>
+            <Route path="/metrics" element={<MetricsPage/>}/>
         </Routes>
       </BrowserRouter>
   );

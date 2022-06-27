@@ -10,10 +10,6 @@ type ResourceListProps = {
     selectedResourceId: number | null;
 }
 
-type ResourceListState = {
-    searchedResources: Resource[];
-}
-
 class ResourceList extends React.Component<ResourceListProps, {}>{
 
     render() {

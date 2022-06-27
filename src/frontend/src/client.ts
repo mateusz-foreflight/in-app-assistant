@@ -113,5 +113,9 @@ export const deleteSource = (sourceId: number, force: boolean = false)  =>
 
 
 // METRICS
+
+export const getAllMetrics = () =>
+    fetch(baseUrl + "/metrics").then(checkStatus);
+
 export const addMetric = (newMetric: MetricDTO) =>
     fetch(baseUrl + "/metrics", postOptions(newMetric)).then(checkStatus);
