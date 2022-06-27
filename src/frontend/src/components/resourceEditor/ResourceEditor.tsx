@@ -146,12 +146,27 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
         this.props.deactivateCallback()
     }
 
+    getCurrentlyEditingText(){
+        switch(this.state.modificationState){
+            case modification.adding:
+                return "ADDING NEW CHOICE"
+            case modification.editing:
+                return this.props.resourceBeingEdited?.name
+            case modification.inactive:
+                return "";
+        }
+    }
+
     render() {
         return (
             <Row borderBottom={true} borderTop={true} width={"35%"} margin={"10px"} flexDirection={"column"}>
                 <Heading>
                     Resource Editor:
                 </Heading>
+                <p>
+                    Currently Editing: <span style={{color: "#3498DB"}}>{
+                    this.getCurrentlyEditingText()}</span>
+                </p>
 
                 <Row>
                     <Button disabled={this.state.modificationState === modification.adding || this.state.modificationState === modification.editing}
@@ -175,6 +190,7 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
 
                 <Row width={"60%"} margin={"10px"}>
                     <TextInput label={"Name"}
+                               placeholder={"Required"}
                                disabled={this.state.modificationState === modification.inactive}
                                value={this.state.nameInputValue}
                                errors={this.state.nameInputErrors}
@@ -186,6 +202,7 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
 
                 <Row width={"60%"} margin={"10px"}>
                     <TextInput label={"Link"}
+                               placeholder={"Required"}
                                disabled={this.state.modificationState === modification.inactive}
                                value={this.state.linkInputValue}
                                errors={this.state.linkInputErrors}
@@ -197,6 +214,7 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
 
                 <Row width={"60%"} margin={"10px"}>
                     <Select autoComplete
+                            placeholder={"Required"}
                             options={this.getSourceOptions()}
                             disabled={this.state.modificationState === modification.inactive}
                             value={this.state.sourceInputValue}

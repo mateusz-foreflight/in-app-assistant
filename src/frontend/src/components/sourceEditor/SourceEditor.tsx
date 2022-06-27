@@ -113,12 +113,27 @@ class SourceEditor extends React.Component<SourceEditorProps, SourceEditorState>
         this.props.deactivateCallback();
     }
 
+    getCurrentlyEditingText(){
+        switch(this.state.modificationState){
+            case modification.adding:
+                return "ADDING NEW CHOICE"
+            case modification.editing:
+                return this.props.sourceBeingEdited?.name
+            case modification.inactive:
+                return "";
+        }
+    }
+
     render() {
         return (
             <Row borderBottom={true} borderTop={true} width={"35%"} margin={"10px"} flexDirection={"column"}>
                 <Heading>
                     Source Editor:
                 </Heading>
+                <p>
+                    Currently Editing: <span style={{color: "#3498DB"}}>{
+                    this.getCurrentlyEditingText()}</span>
+                </p>
 
                 <Row>
                     <Button disabled={this.state.modificationState === modification.adding || this.state.modificationState === modification.editing}
@@ -142,6 +157,7 @@ class SourceEditor extends React.Component<SourceEditorProps, SourceEditorState>
 
                 <Row width={"60%"} margin={"10px"}>
                     <TextInput label={"Name"}
+                               placeholder={"Required"}
                                disabled={this.state.modificationState === modification.inactive}
                                value={this.state.nameInputValue}
                                errors={this.state.nameInputErrors}
@@ -153,6 +169,7 @@ class SourceEditor extends React.Component<SourceEditorProps, SourceEditorState>
 
                 <Row width={"60%"} margin={"10px"}>
                     <TextInput label={"Link"}
+                               placeholder={"Required"}
                                disabled={this.state.modificationState === modification.inactive}
                                value={this.state.linkInputValue}
                                errors={this.state.linkInputErrors}

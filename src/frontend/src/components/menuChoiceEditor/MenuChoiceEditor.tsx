@@ -180,6 +180,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
 
               <Row width={"60%"} margin={"10px"}>
                   <TextInput label={"Name"}
+                             placeholder={"Required"}
                              disabled={this.state.modificationState === modification.inactive}
                              value={this.state.nameInputValue}
                              errors={this.state.nameInputErrors}
@@ -191,6 +192,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
 
               <Row width={"60%"} margin={"10px"}  flexAlign={"center"}>
                   <Select autoComplete
+                          placeholder={"Optional"}
                           options={this.getParentOptions()}
                           disabled={this.state.modificationState === modification.inactive}
                           value={this.state.parentNameInputValue}
@@ -216,6 +218,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
 
               <Row width={"60%"} margin={"10px"}>
                   <Select autoComplete
+                          placeholder={"Select to Add"}
                           disabled={this.state.modificationState === modification.inactive}
                           label={"Add Resource"}
                           options={this.getResourceOptions()}
