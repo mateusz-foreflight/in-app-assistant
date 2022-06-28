@@ -1,11 +1,11 @@
 import React from "react";
-import MenuChoiceList from "../components/menuChoiceList/MenuChoiceList";
+import MenuChoiceList from "../components/menuChoice/MenuChoiceList";
 import {getAllMenuChoices, getAllResources, getChildrenById, extract} from "../client";
 import MenuChoice from "../types/MenuChoice";
 import MenuChoiceWithChildren from "../types/MenuChoiceWithChildren";
-import MenuChoiceEditor from "../components/menuChoiceEditor/MenuChoiceEditor";
+import MenuChoiceEditor from "../components/menuChoice/MenuChoiceEditor";
 import Resource from "../types/Resource";
-import Navbar from "../components/navbar/Navbar";
+import Navbar from "../components/common/Navbar";
 
 type MenuModificationPageState = {
     choices: MenuChoiceWithChildren[];

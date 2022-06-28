@@ -1,10 +1,10 @@
 import React from "react";
-import MetricList from "../components/metricList/MetricList";
+import MetricList from "../components/metric/MetricList";
 import Metric from "../types/Metric";
 import {extract, getAllMetrics} from "../client";
 import Resource from "../types/Resource";
-import Navbar from "../components/navbar/Navbar";
-import MetricViewPanel from "../components/metricViewPanel/MetricViewPanel";
+import Navbar from "../components/common/Navbar";
+import MetricViewPanel from "../components/metric/MetricViewPanel";
 import {Heading} from "@foreflight/ffui";
 
 type MetricsPageState = {

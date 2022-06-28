@@ -1,10 +1,10 @@
 import React from "react";
-import ResourceList from "../components/resourceList/ResourceList";
+import ResourceList from "../components/resource/ResourceList";
 import Resource from "../types/Resource";
 import {extract, getAllResources, getAllSources} from "../client";
-import ResourceEditor from "../components/resourceEditor/ResourceEditor";
+import ResourceEditor from "../components/resource/ResourceEditor";
 import Source from "../types/Source";
-import Navbar from "../components/navbar/Navbar";
+import Navbar from "../components/common/Navbar";
 
 type ResourceModificationPageState = {
     resources: Resource[];

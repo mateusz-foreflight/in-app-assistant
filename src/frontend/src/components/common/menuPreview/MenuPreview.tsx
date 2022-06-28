@@ -1,9 +1,9 @@
 import React from "react";
 import {Button, Row} from "@foreflight/ffui";
-import {getChildrenById, getTopLevelMenuChoices} from "../../client";
-import MenuChoice from "../../types/MenuChoice";
+import {getChildrenById, getTopLevelMenuChoices} from "../../../client";
+import MenuChoice from "../../../types/MenuChoice";
 import ResourceView from "./ResourceView";
-import Resource from "../../types/Resource";
+import Resource from "../../../types/Resource";
 
 type MenuChoiceSelectable = MenuChoice &
     {selected: boolean}
@@ -120,7 +120,7 @@ class MenuPreview extends React.Component<MenuPreviewProps, MenuPreviewState>{
         return(
             <div>
                 {this.state.choices.map((choiceRow, rowIdx) =>(
-                    <Row key={rowIdx} margin={"10px"}>
+                    <Row key={rowIdx} margin={"0px"}>
                         {choiceRow.map((choice, choiceIdx) => (
                             <Button color={choice.selected ? "green" : "blue"} key={choice.id} onClick={() => {
                                 this.buttonClick(rowIdx, choiceIdx)

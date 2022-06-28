@@ -1,6 +1,6 @@
 import React from "react";
 import {Heading} from "@foreflight/ffui";
-import SelectableList from "../selectableList/SelectableList";
+import SelectableList from "../common/SelectableList";
 import Resource from "../../types/Resource";
 
 type ResourceListProps = {

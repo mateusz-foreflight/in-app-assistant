@@ -1,5 +1,5 @@
 import React from "react";
-import SelectableList from "../selectableList/SelectableList";
+import SelectableList from "../common/SelectableList";
 import Metric from "../../types/Metric";
 
 type MetricListProps = {

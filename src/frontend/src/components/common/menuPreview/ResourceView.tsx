@@ -1,6 +1,6 @@
 import React from "react";
 import {Button, IColumn, IRow, Row, SortableTable} from "@foreflight/ffui";
-import Resource from "../../types/Resource";
+import Resource from "../../../types/Resource";
 
 type ResourceViewProps = {
     resources: Resource[];

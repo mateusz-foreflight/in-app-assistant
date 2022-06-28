@@ -1,7 +1,7 @@
 import React from "react";
 import {Heading} from "@foreflight/ffui";
 import MenuChoiceWithChildren from "../../types/MenuChoiceWithChildren";
-import SelectableList from "../selectableList/SelectableList";
+import SelectableList from "../common/SelectableList";
 
 type MenuChoiceListProps = {
     choices: MenuChoiceWithChildren[];

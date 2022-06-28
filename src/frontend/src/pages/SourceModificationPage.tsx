@@ -1,9 +1,9 @@
 import React from "react";
-import SourceList from "../components/sourceList/SourceList";
+import SourceList from "../components/source/SourceList";
 import Source from "../types/Source";
 import {extract, getAllSources} from "../client";
-import SourceEditor from "../components/sourceEditor/SourceEditor";
-import Navbar from "../components/navbar/Navbar";
+import SourceEditor from "../components/source/SourceEditor";
+import Navbar from "../components/common/Navbar";
 
 type SourceModificationState = {
     sources: Source[];

@@ -1,6 +1,6 @@
 import React from "react";
-import MenuPreview from "../components/menuPreview/MenuPreview";
-import Navbar from "../components/navbar/Navbar";
+import MenuPreview from "../components/common/menuPreview/MenuPreview";
+import Navbar from "../components/common/Navbar";
 import {Button, Row, TextInput, Text, Textarea, ButtonGroup} from "@foreflight/ffui";
 import MenuChoice from "../types/MenuChoice";
 import MetricDTO from "../types/MetricDTO";
