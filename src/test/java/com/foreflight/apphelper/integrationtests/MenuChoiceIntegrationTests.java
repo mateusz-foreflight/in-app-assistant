@@ -5,6 +5,7 @@ import com.foreflight.apphelper.domain.Resource;
 import com.foreflight.apphelper.domain.Source;
 import com.foreflight.apphelper.repository.MenuChoiceRepository;
 import com.foreflight.apphelper.repository.ResourceRepository;
+import com.foreflight.apphelper.repository.SourceRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -45,6 +46,8 @@ class MenuChoiceIntegrationTests {
     @Autowired
     private ResourceRepository resourceRepository;
 
+    @Autowired
+    private SourceRepository sourceRepository;
 
     @Test
     void contextLoads() {
@@ -54,8 +57,11 @@ class MenuChoiceIntegrationTests {
     @Transactional
     void getAllChoices() throws Exception{
         // Given
-        Resource resource1 = new Resource("res1", "link", Source.PilotGuide);
-        Resource resource2 = new Resource("res2", "link", Source.PilotGuide);
+        Source source1 = new Source("source1", "sourcelink");
+        sourceRepository.save(source1);
+
+        Resource resource1 = new Resource("res1", "link", source1);
+        Resource resource2 = new Resource("res2", "link", source1);
         List<Resource> resources = Arrays.asList(resource1, resource2);
         resourceRepository.saveAll(resources);
 
@@ -149,7 +155,10 @@ class MenuChoiceIntegrationTests {
     @Transactional
     void createChoice_withValidChoice() throws Exception{
         // Given
-        Resource resource1 = new Resource("resource1", "link", Source.PilotGuide);
+        Source source1 = new Source("source1", "sourcelink");
+        sourceRepository.save(source1);
+
+        Resource resource1 = new Resource("resource1", "link", source1);
         MenuChoice choice1 = new MenuChoice("choice1", null, null);
         menuChoiceRepository.save(choice1);
         resourceRepository.save(resource1);
@@ -186,7 +195,10 @@ class MenuChoiceIntegrationTests {
     @Transactional
     void updateChoice_withValidChoice_withPresentId() throws Exception{
         // Given
-        Resource resource1 = new Resource("resource1", "link", Source.PilotGuide);
+        Source source1 = new Source("source1", "sourcelink");
+        sourceRepository.save(source1);
+
+        Resource resource1 = new Resource("resource1", "link", source1);
         MenuChoice choice1 = new MenuChoice("choice1", null, Collections.emptyList());
         resourceRepository.save(resource1);
         menuChoiceRepository.save(choice1);
@@ -210,7 +222,10 @@ class MenuChoiceIntegrationTests {
     @Transactional
     void updateChoice_withValidChoice_withNotPresentId() throws Exception{
         // Given
-        Resource resource1 = new Resource("resource1", "link", Source.PilotGuide);
+        Source source1 = new Source("source1", "sourcelink");
+        sourceRepository.save(source1);
+
+        Resource resource1 = new Resource("resource1", "link", source1);
         MenuChoice choice1 = new MenuChoice("choice1", null, Collections.emptyList());
         resourceRepository.save(resource1);
         menuChoiceRepository.save(choice1);

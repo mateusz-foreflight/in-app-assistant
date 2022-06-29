@@ -10,10 +10,8 @@ import org.mockito.Mockito;
 import java.util.*;
 
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 // Mocks a menu choice repository with the following MenuChoice objects in it:
 //      id: 1, name: choice1, parent: null, resources: []
@@ -22,6 +20,8 @@ import static org.mockito.Mockito.when;
 // And a resource service with the following resources:
 //      id: 1, name: resource1, link: link1
 public class MockProfile1{
+    public Source source1;
+
     public Resource resource1;
     public List<Resource> resources;
 
@@ -30,8 +30,11 @@ public class MockProfile1{
 
     public MockProfile1(MenuChoiceRepository menuChoiceRepository, ResourceService resourceService){
         // SET UP DATA
+        // Set up sources
+        this.source1 = new Source("source1", "sourcelink");
+
         // Set up resources
-        this.resource1 = new Resource("resource1", "link1", new Source("source", "sourcelink"));
+        this.resource1 = new Resource("resource1", "link1", this.source1);
         this.resource1.setId(1L);
         this.resources = new ArrayList<>();
         resources.add(resource1);
@@ -44,6 +47,8 @@ public class MockProfile1{
         this.choice3 = new MenuChoice("choice3", choice1, resources);
         this.choice3.setId(3L);
         this.choices = Arrays.asList(choice1, choice2, choice3);
+
+
 
         // SET UP METHOD MOCKS
         // menuChoiceRepository - save, findAll, findMenuChoiceById, findMenuChoiceByName, existsById,
@@ -74,8 +79,14 @@ public class MockProfile1{
         when(menuChoiceRepository.findChildMenuChoicesById(anyLong())).thenReturn(Collections.emptyList());
         doReturn(Arrays.asList(choice2, choice3)).when(menuChoiceRepository).findChildMenuChoicesById(1L);
 
-        // resourceService - getResourceByName
+
+        // resourceService - getResourceByName, namesToResources
         when(resourceService.getResourceByName(anyString())).thenReturn(Optional.empty());
         doReturn(Optional.of(resource1)).when(resourceService).getResourceByName("resource1");
+
+        when(resourceService.namesToResources(anyList())).thenThrow(new IllegalStateException("resource doesNotExist"));
+        doReturn(Collections.singletonList(this.resource1)).when(resourceService).namesToResources(Collections.singletonList("resource1"));
+        doReturn(Collections.emptyList()).when(resourceService).namesToResources(Collections.emptyList());
+
     }
 }

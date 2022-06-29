@@ -3,6 +3,7 @@ package com.foreflight.apphelper.unittests.mockprofiles;
 import com.foreflight.apphelper.domain.Resource;
 import com.foreflight.apphelper.domain.Source;
 import com.foreflight.apphelper.repository.ResourceRepository;
+import com.foreflight.apphelper.repository.SourceRepository;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
@@ -19,17 +20,28 @@ import static org.mockito.Mockito.when;
 //      id: 1, name: resource1, link: link1
 //      id: 2, name: resource2, link: null
 public class MockProfile2 {
+    public Source source1;
+    public Source source2;
+    public List<Source> sources;
+
     public Resource resource1;
     public Resource resource2;
     public List<Resource> resources;
 
 
-    public MockProfile2(ResourceRepository resourceRepository){
+    public MockProfile2(ResourceRepository resourceRepository, SourceRepository sourceRepository){
         // SET UP DATA
+        // Set up sources
+        this.source1 = new Source("source1", "sourcelink1");
+        this.source1.setId(1L);
+        this.source2 = new Source("source2", "sourcelink2");
+        this.source2.setId(2L);
+        this.sources = Arrays.asList(source1, source2);
+
         // Set up resources
-        this.resource1 = new Resource("resource1", "link2", new Source("source", "sourcelink"));
+        this.resource1 = new Resource("resource1", "link2", this.source1);
         this.resource1.setId(1L);
-        this.resource2 = new Resource("resource2", null, new Source("source", "sourcelink"));
+        this.resource2 = new Resource("resource2", null, this.source2);
         this.resource2.setId(2L);
         this.resources = Arrays.asList(resource1, resource2);
 
@@ -54,5 +66,10 @@ public class MockProfile2 {
         doReturn(true).when(resourceRepository).existsById(1L);
         doReturn(true).when(resourceRepository).existsById(2L);
 
+
+        // sourceRepository - findSourceByName
+        when(sourceRepository.findSourceByName(anyString())).thenReturn(Optional.empty());
+        doReturn(Optional.of(source1)).when(sourceRepository).findSourceByName("source1");
+        doReturn(Optional.of(source2)).when(sourceRepository).findSourceByName("source2");
     }
 }

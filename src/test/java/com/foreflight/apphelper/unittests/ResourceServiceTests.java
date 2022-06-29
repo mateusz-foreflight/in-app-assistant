@@ -4,6 +4,7 @@ import com.foreflight.apphelper.domain.Resource;
 import com.foreflight.apphelper.domain.ResourceDTO;
 import com.foreflight.apphelper.domain.Source;
 import com.foreflight.apphelper.repository.ResourceRepository;
+import com.foreflight.apphelper.repository.SourceRepository;
 import com.foreflight.apphelper.service.ResourceService;
 import com.foreflight.apphelper.unittests.mockprofiles.MockProfile2;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,19 +24,23 @@ public class ResourceServiceTests {
     @Mock
     private ResourceRepository resourceRepository;
 
+    @Mock
+    private SourceRepository sourceRepository;
+
     private ResourceService resourceService;
 
     @BeforeEach
     void init(){
         resourceRepository = mock(ResourceRepository.class);
+        sourceRepository = mock(SourceRepository.class);
 
-        resourceService = new ResourceService(resourceRepository);
+        resourceService = new ResourceService(resourceRepository, sourceRepository);
     }
 
     @Test
     void getAllResources_works(){
         // Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository);
+        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
 
         // When
         List<Resource> actual = resourceService.getAllResources();
@@ -48,7 +53,7 @@ public class ResourceServiceTests {
     @Test
     void getResourceById_withValidId(){
         // Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository);
+        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
 
         // When
         Optional<Resource> actual = resourceService.getResourceById(1L);
@@ -61,7 +66,7 @@ public class ResourceServiceTests {
     @Test
     void getResourceById_withInvalidId(){
         // Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository);
+        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
 
         // When
         Optional<Resource> actual = resourceService.getResourceById(15L);
@@ -73,7 +78,7 @@ public class ResourceServiceTests {
     @Test
     void getResourceByName_withValidName(){
         // Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository);
+        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
 
         // When
         Optional<Resource> actual = resourceService.getResourceByName("resource1");
@@ -86,7 +91,7 @@ public class ResourceServiceTests {
     @Test
     void getResourceByName_withInvalidName(){
         // Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository);
+        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
 
         // When
         Optional<Resource> actual = resourceService.getResourceByName("doesNotExist");
@@ -98,15 +103,15 @@ public class ResourceServiceTests {
     @Test
     void addResource_withValidResource(){
         // Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository);
-        ResourceDTO dto = new ResourceDTO("new", "newLink", "PilotGuide");
+        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
+        ResourceDTO dto = new ResourceDTO("new", "newLink", "source1");
 
         // When
         Resource actual = resourceService.addResource(dto);
         actual.setId(5L);
 
         // Then
-        Resource expected = new Resource("new", "newLink", Source.PilotGuide);
+        Resource expected = new Resource("new", "newLink", mockProfile.source1);
         expected.setId(5L);
         assertThat(actual).isEqualTo(expected);
     }
@@ -114,8 +119,8 @@ public class ResourceServiceTests {
     @Test
     void addResource_withInvalidResource_withInvalidName(){
         // Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository);
-        ResourceDTO dto = new ResourceDTO(null, "newLink", "PilotGuide");
+        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
+        ResourceDTO dto = new ResourceDTO(null, "newLink", "source1");
 
         // When, Then
         assertThatExceptionOfType(IllegalStateException.class)
@@ -127,14 +132,14 @@ public class ResourceServiceTests {
     @Test
     void updateResource_withPresentId(){
         // Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository);
-        ResourceDTO dto = new ResourceDTO("new", "newLink", "PilotGuide");
+        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
+        ResourceDTO dto = new ResourceDTO("new", "newLink", "source1");
 
         // When
         Resource actual = resourceService.updateResource(dto, 1L);
 
         // Then
-        Resource expected = new Resource("new", "newLink", Source.PilotGuide);
+        Resource expected = new Resource("new", "newLink", mockProfile.source1);
         expected.setId(1L);
         assertThat(actual).isEqualTo(expected);
     }
@@ -142,14 +147,14 @@ public class ResourceServiceTests {
     @Test
     void updateResource_withNotPresentId(){
         // Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository);
-        ResourceDTO dto = new ResourceDTO("new", "newLink", "PilotGuide");
+        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
+        ResourceDTO dto = new ResourceDTO("new", "newLink", "source1");
 
         // When
         Resource actual = resourceService.updateResource(dto, 15L);
 
         // Then
-        Resource expected = new Resource("new", "newLink", Source.PilotGuide);
+        Resource expected = new Resource("new", "newLink", mockProfile.source1);
         expected.setId(15L);
         assertThat(actual).isEqualTo(expected);
     }
@@ -157,7 +162,7 @@ public class ResourceServiceTests {
     @Test
     void deleteResource_withValidId(){
         //Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository);
+        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
 
         // When
         resourceService.deleteResource(1L, false);
@@ -169,7 +174,7 @@ public class ResourceServiceTests {
     @Test
     void deleteChoice_withInvalidId(){
         //Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository);
+        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
 
         // When, Then
         assertThatExceptionOfType(IllegalStateException.class)
