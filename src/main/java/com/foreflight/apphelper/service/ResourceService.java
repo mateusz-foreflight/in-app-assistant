@@ -81,7 +81,7 @@ public class ResourceService {
         for(String resourceName : resourceNames){
             Optional<Resource> newResource = this.getResourceByName(resourceName);
             if (!newResource.isPresent()){
-                throw new IllegalStateException("No resource with the provided resource name" + resourceName + " exists");
+                throw new IllegalStateException("No resource with the provided resource name " + resourceName + " exists");
             }
             newResources.add(newResource.get());
         }

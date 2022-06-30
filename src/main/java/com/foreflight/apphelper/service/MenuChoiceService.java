@@ -9,10 +9,7 @@ import org.hibernate.HibernateException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class MenuChoiceService {
@@ -128,7 +125,8 @@ public class MenuChoiceService {
             choice.setParent(newParent.get());
         }
 
-        choice.setResources(resourceService.namesToResources(dto.getResourceNames()));
+        List<String> resourceNamesNoDupes = new ArrayList<>(new HashSet<>(dto.getResourceNames()));
+        choice.setResources(resourceService.namesToResources(resourceNamesNoDupes));
 
         return choice;
     }
