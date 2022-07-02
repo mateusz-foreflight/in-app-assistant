@@ -78,7 +78,22 @@ public class MenuChoice implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         MenuChoice choice = (MenuChoice) o;
 
-        return id.equals(choice.id) && name.equals(choice.name) && Objects.equals(parent, choice.parent) && resources.equals(choice.resources);
+        boolean resourcesEquality = true;
+        for(Resource resource : resources){
+            boolean found = false;
+            for(Resource otherResource: choice.resources){
+                if(resource.equals(otherResource)){
+                    found = true;
+                    break;
+                }
+            }
+            if(!found){
+                resourcesEquality = false;
+                break;
+            }
+        }
+
+        return id.equals(choice.id) && name.equals(choice.name) && Objects.equals(parent, choice.parent) && resourcesEquality;
     }
 
     @Override

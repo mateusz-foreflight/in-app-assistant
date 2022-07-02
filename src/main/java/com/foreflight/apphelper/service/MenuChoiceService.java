@@ -2,10 +2,8 @@ package com.foreflight.apphelper.service;
 
 import com.foreflight.apphelper.domain.MenuChoice;
 import com.foreflight.apphelper.domain.MenuChoiceDTO;
-import com.foreflight.apphelper.domain.Resource;
+import com.foreflight.apphelper.domain.Metric;
 import com.foreflight.apphelper.repository.MenuChoiceRepository;
-import org.hibernate.Hibernate;
-import org.hibernate.HibernateException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -81,6 +79,8 @@ public class MenuChoiceService {
         if(!menuChoiceRepository.existsById(id)){
             throw new IllegalStateException("Menu choice with the id " + id + " does not exist.");
         }
+
+        menuChoiceRepository.deleteRelationsToMetricById(id);
 
         if(force){
             cascadingDelete(id);

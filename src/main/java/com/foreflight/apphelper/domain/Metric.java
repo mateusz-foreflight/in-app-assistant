@@ -33,7 +33,7 @@ public class Metric implements Serializable {
     @Column(name = "user_feedback")
     private String userFeedback;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "metric_menuchoice",
             joinColumns = @JoinColumn(name = "metric_id"),

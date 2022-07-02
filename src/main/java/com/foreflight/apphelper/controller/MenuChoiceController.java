@@ -44,6 +44,7 @@ public class MenuChoiceController {
     }
 
     // Update an existing menu choice with the given id, or create a new one if one doesn't exist already
+    // NOTE: No guarantee that the newly created menu choice will have the provided id
     @PutMapping(path = "{choiceId}")
     public MenuChoice updateChoice(@RequestBody MenuChoiceDTO choice, @PathVariable("choiceId") Long id){
         return menuChoiceService.updateChoice(choice, id);
