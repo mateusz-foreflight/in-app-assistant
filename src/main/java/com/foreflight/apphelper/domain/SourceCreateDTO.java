@@ -1,28 +1,14 @@
 package com.foreflight.apphelper.domain;
 
-public class SourceDTO {
-    private Long id;
+public class SourceCreateDTO {
     private String name;
     private String link;
 
-    public static SourceDTO assemble(Source source){
-        return new SourceDTO(source.getId(), source.getName(), source.getLink());
-    }
+    public SourceCreateDTO(){}
 
-    public SourceDTO(){}
-
-    public SourceDTO(Long id, String name, String link) {
-        this.id = id;
+    public SourceCreateDTO(String name, String link) {
         this.name = name;
         this.link = link;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {

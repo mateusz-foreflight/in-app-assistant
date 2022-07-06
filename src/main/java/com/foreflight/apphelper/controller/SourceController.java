@@ -1,6 +1,7 @@
 package com.foreflight.apphelper.controller;
 
 import com.foreflight.apphelper.domain.Source;
+import com.foreflight.apphelper.domain.SourceCreateDTO;
 import com.foreflight.apphelper.domain.SourceDTO;
 import com.foreflight.apphelper.service.SourceService;
 import org.springframework.web.bind.annotation.*;
@@ -18,22 +19,22 @@ public class SourceController {
     }
 
     @GetMapping
-    public List<Source> getAllSources(){
+    public List<SourceDTO> getAllSources(){
         return sourceService.getAllSources();
     }
 
     @GetMapping(path="{sourceId}")
-    public Optional<Source> getSourceById(@PathVariable("sourceId") Long id){
+    public Optional<SourceDTO> getSourceById(@PathVariable("sourceId") Long id){
         return sourceService.getSourceById(id);
     }
 
     @PostMapping
-    public Source createSource(@RequestBody SourceDTO source){
+    public SourceDTO createSource(@RequestBody SourceCreateDTO source){
         return sourceService.addSource(source);
     }
 
     @PutMapping(path = "{sourceId}")
-    public Source updateSource(@RequestBody SourceDTO source, @PathVariable("sourceId") Long id){
+    public SourceDTO updateSource(@RequestBody SourceCreateDTO source, @PathVariable("sourceId") Long id){
         return sourceService.updateSource(source, id);
     }
 

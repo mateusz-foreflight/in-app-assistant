@@ -1,9 +1,6 @@
 package com.foreflight.apphelper.controller;
 
-import com.foreflight.apphelper.domain.MenuChoice;
-import com.foreflight.apphelper.domain.MenuChoiceDTO;
-import com.foreflight.apphelper.domain.Resource;
-import com.foreflight.apphelper.domain.ResourceDTO;
+import com.foreflight.apphelper.domain.*;
 import com.foreflight.apphelper.service.ResourceService;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,25 +18,25 @@ public class ResourceController {
 
     // Get a list of all resources
     @GetMapping
-    public List<Resource> getAllResources() {
+    public List<ResourceDTO> getAllResources() {
         return resourceService.getAllResources();
     }
 
     // Get a single resource by id
     @GetMapping(path = "{resourceId}")
-    public Optional<Resource> getResourceById(@PathVariable("resourceId") Long id){
+    public Optional<ResourceDTO> getResourceById(@PathVariable("resourceId") Long id){
         return resourceService.getResourceById(id);
     }
 
     // Add a new resource
     @PostMapping
-    public Resource createResource(@RequestBody ResourceDTO resource) {
+    public ResourceDTO createResource(@RequestBody ResourceCreateDTO resource) {
         return resourceService.addResource(resource);
     }
 
     // Update an existing resource with the given id, or create a new one if one doesn't exist already
     @PutMapping(path = "{resourceId}")
-    public Resource updateResource(@RequestBody ResourceDTO resource, @PathVariable("resourceId") Long id){
+    public ResourceDTO updateResource(@RequestBody ResourceCreateDTO resource, @PathVariable("resourceId") Long id){
         return resourceService.updateResource(resource, id);
     }
 

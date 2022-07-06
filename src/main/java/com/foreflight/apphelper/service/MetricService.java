@@ -1,16 +1,15 @@
 package com.foreflight.apphelper.service;
 
-import com.foreflight.apphelper.domain.MenuChoice;
-import com.foreflight.apphelper.domain.Metric;
-import com.foreflight.apphelper.domain.MetricDTO;
-import com.foreflight.apphelper.domain.Resource;
+import com.foreflight.apphelper.domain.*;
 import com.foreflight.apphelper.repository.MetricRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MetricService {
@@ -25,20 +24,20 @@ public class MetricService {
         this.menuChoiceService = menuChoiceService;
     }
 
-    public List<Metric> getAllMetrics() {
-        return metricRepository.findAll();
+    public List<MetricDTO> getAllMetrics() {
+        return metricRepository.findAll().stream().map(MetricDTO::assemble).collect(Collectors.toList());
     }
 
-    public Optional<Metric> getMetricById(Long id) {
-        return metricRepository.findMetricById(id);
+    public Optional<MetricDTO> getMetricById(Long id) {
+        return metricRepository.findMetricById(id).map(MetricDTO::assemble);
     }
 
-    public Metric addMetric(MetricDTO metric) {
+    public MetricDTO addMetric(MetricCreateDTO metric) {
         Metric newMetric = unpackDTO(metric);
-        return metricRepository.save(newMetric);
+        return MetricDTO.assemble(metricRepository.save(newMetric));
     }
 
-    public Metric updateMetric(MetricDTO metric, Long id) {
+    public MetricDTO updateMetric(MetricCreateDTO metric, Long id) {
         Metric newMetric = unpackDTO(metric);
 
         return metricRepository.findMetricById(id)
@@ -50,11 +49,11 @@ public class MetricService {
                     foundMetric.setMenuChoices(newMetric.getMenuChoices());
                     foundMetric.setResources(newMetric.getResources());
 
-                    return metricRepository.save(foundMetric);
+                    return MetricDTO.assemble(metricRepository.save(foundMetric));
                 })
                 .orElseGet(() -> {
                     newMetric.setId(id);
-                    return metricRepository.save(newMetric);
+                    return MetricDTO.assemble(metricRepository.save(newMetric));
                 });
     }
 
@@ -66,15 +65,14 @@ public class MetricService {
         metricRepository.deleteById(id);
     }
 
-    private Metric unpackDTO(MetricDTO dto){
+    private Metric unpackDTO(MetricCreateDTO dto){
         Metric metric = new Metric();
 
-        if(dto.isAnswerFound() == null){
+        if(dto.getAnswerFound() == null){
             throw new IllegalStateException("Metric answer found field must not be null");
         }
-        metric.setAnswerFound(dto.isAnswerFound());
+        metric.setAnswerFound(dto.getAnswerFound());
 
-        System.out.println(dto.getTimestamp());
         metric.setTimestamp(dto.getTimestamp());
 
         metric.setTicketLink(dto.getTicketLink());
@@ -83,12 +81,12 @@ public class MetricService {
 
         metric.setUserFeedback(dto.getUserFeedback());
 
-        if(dto.getResourceNames() != null) {
-            metric.setResources(resourceService.namesToResources(dto.getResourceNames()));
+        if(dto.getResourceIds() != null) {
+            metric.setResources(resourceService.getUniqueResourcesFromIdList(dto.getResourceIds()));
         }
 
-        if(dto.getMenuchoiceNames() != null) {
-            metric.setMenuChoices(menuChoiceService.namesToMenuChoices(dto.getMenuchoiceNames()));
+        if(dto.getMenuchoiceIds() != null) {
+            metric.setMenuChoices(menuChoiceService.getUniqueMenuChoicesFromIdList(dto.getMenuchoiceIds()));
         }
 
         return metric;

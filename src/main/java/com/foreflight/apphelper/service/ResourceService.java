@@ -1,15 +1,13 @@
 package com.foreflight.apphelper.service;
 
-import com.foreflight.apphelper.domain.MenuChoice;
-import com.foreflight.apphelper.domain.Resource;
-import com.foreflight.apphelper.domain.ResourceDTO;
-import com.foreflight.apphelper.domain.Source;
+import com.foreflight.apphelper.domain.*;
 import com.foreflight.apphelper.repository.ResourceRepository;
 import com.foreflight.apphelper.repository.SourceRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,35 +24,34 @@ public class ResourceService {
     }
 
     // Get a list of all resources
-    public List<Resource> getAllResources() {
-        return resourceRepository.findAll();
+    public List<ResourceDTO> getAllResources() {
+        return resourceRepository.findAll().stream().map(ResourceDTO::assemble).collect(Collectors.toList());
     }
 
     // Get a single resource by id
-    public Optional<Resource> getResourceById(Long id) { return resourceRepository.findResourceById(id); }
-
-    // Get a single resource by name
-    public Optional<Resource> getResourceByName(String name) { return resourceRepository.findResourceByName(name); }
+    public Optional<ResourceDTO> getResourceById(Long id) {
+        return resourceRepository.findResourceById(id).map(ResourceDTO::assemble);
+    }
 
     // Add a new resource
-    public Resource addResource(ResourceDTO resource) {
+    public ResourceDTO addResource(ResourceCreateDTO resource) {
         Resource newResource = unpackDTO(resource);
-        return resourceRepository.save(newResource);
+        return ResourceDTO.assemble(resourceRepository.save(newResource));
     }
 
     // Update an existing resource with the given id, or create a new one if one doesn't exist already
-    public Resource updateResource(ResourceDTO resource, Long id) {
+    public ResourceDTO updateResource(ResourceCreateDTO resource, Long id) {
         Resource newResource = unpackDTO(resource);
         return resourceRepository.findResourceById(id)
                 .map(foundResource -> {
                     foundResource.setName(newResource.getName());
                     foundResource.setLink(newResource.getLink());
                     foundResource.setSource(newResource.getSource());
-                    return resourceRepository.save(foundResource);
+                    return ResourceDTO.assemble(resourceRepository.save(foundResource));
                 })
                 .orElseGet(() -> {
                     newResource.setId(id);
-                    return resourceRepository.save(newResource);
+                    return ResourceDTO.assemble(resourceRepository.save(newResource));
                 });
     }
 
@@ -79,7 +76,7 @@ public class ResourceService {
         List<Resource> newResources = new ArrayList<>();
 
         for(String resourceName : resourceNames){
-            Optional<Resource> newResource = this.getResourceByName(resourceName);
+            Optional<Resource> newResource = resourceRepository.findResourceByName(resourceName);
             if (!newResource.isPresent()){
                 throw new IllegalStateException("No resource with the provided resource name " + resourceName + " exists");
             }
@@ -90,7 +87,7 @@ public class ResourceService {
     }
 
     // Create a Resource object using a data transfer object
-    private Resource unpackDTO(ResourceDTO dto){
+    private Resource unpackDTO(ResourceCreateDTO dto){
         Resource resource = new Resource();
 
         if(dto.getName() == null){
@@ -99,19 +96,35 @@ public class ResourceService {
         if(dto.getLink() == null){
             throw new IllegalStateException("Resource link must not be null");
         }
-        if(dto.getSource() == null){
+        if(dto.getSourceId() == null){
             throw new IllegalStateException("Resource source must not be null");
         }
 
         resource.setName(dto.getName());
         resource.setLink(dto.getLink());
 
-        Optional<Source> newSource = sourceRepository.findSourceByName(dto.getSource());
+        Optional<Source> newSource = sourceRepository.findSourceById(dto.getSourceId());
         if (!newSource.isPresent()) {
-            throw new IllegalStateException("No source with the provided name " + dto.getSource() + " exists");
+            throw new IllegalStateException("No source with the id " + dto.getSourceId() + " exists");
         }
         resource.setSource(newSource.get());
 
         return resource;
+    }
+
+    public List<Resource> getUniqueResourcesFromIdList(List<Long> ids){
+        // Remove duplicate ids
+        List<Long> resourceIdsNoDupes = new ArrayList<>(new HashSet<>(ids));
+        List<Resource> resources = new ArrayList<>();
+
+        for(Long resourceId : resourceIdsNoDupes){
+            Optional<Resource> foundResource = resourceRepository.findResourceById(resourceId);
+            if(!foundResource.isPresent()){
+                throw new IllegalStateException("No resource with the id " + resourceId + " exists");
+            }
+            resources.add(foundResource.get());
+        }
+
+        return resources;
     }
 }

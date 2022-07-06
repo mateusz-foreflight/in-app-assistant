@@ -6,40 +6,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MenuChoiceDTO {
-    private Long id;
+public class MenuChoiceCreateDTO {
     private String name;
     private Long parentId = null;
     private List<Long> resourceIds = new ArrayList<>();
 
-    public static MenuChoiceDTO assemble(MenuChoice choice){
-        MenuChoiceDTO dto = new MenuChoiceDTO();
+    public MenuChoiceCreateDTO(){}
 
-        dto.setId(choice.getId());
-        dto.setName(choice.getName());
-        dto.setParentId(choice.getParent() == null ? null : choice.getParent().getId());
-        for(Resource resource : choice.getResources()){
-            dto.getResourceIds().add(resource.getId());
-        }
-
-        return dto;
-    }
-
-    public MenuChoiceDTO(){}
-
-    public MenuChoiceDTO(Long id, String name, Long parentId, List<Long> resourceIds) {
-        this.id = id;
+    public MenuChoiceCreateDTO(String name, Long parentId, List<Long> resourceIds) {
         this.name = name;
         this.parentId = parentId;
         this.resourceIds = resourceIds;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {

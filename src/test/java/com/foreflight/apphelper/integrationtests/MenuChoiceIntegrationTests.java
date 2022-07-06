@@ -1,9 +1,6 @@
 package com.foreflight.apphelper.integrationtests;
 
-import com.foreflight.apphelper.domain.MenuChoice;
-import com.foreflight.apphelper.domain.MenuChoiceDTO;
-import com.foreflight.apphelper.domain.Metric;
-import com.foreflight.apphelper.domain.Resource;
+import com.foreflight.apphelper.domain.*;
 import com.foreflight.apphelper.repository.MenuChoiceRepository;
 import com.foreflight.apphelper.repository.MetricRepository;
 import com.foreflight.apphelper.repository.ResourceRepository;
@@ -73,27 +70,29 @@ class MenuChoiceIntegrationTests {
     }
 
 
-    // Generate a jsonPath string  from a given menu choice
+    // Generate a jsonPath string from a given menu choice, after turning it into a menu choice DTO
     // The string will look for a json object with the given choice's name, the choice's parent's name, and the
     // choice's resource's names
     private String menuChoiceToJsonPathStr(MenuChoice choice){
-        String nameStr = "@.name == \"" + choice.getName() +"\"";
+        MenuChoiceDTO dto = MenuChoiceDTO.assemble(choice);
 
-        String parentStr = choice.getParent() == null ? "@.parent == null" : "@.parent.name == \"" + choice.getParent().getName() + "\"";
+        String nameStr = "@.name == \"" + dto.getName() +"\"";
+
+        String parentStr = dto.getParentId() == null ? "@.parentId == null" : "@.parentId == \"" + dto.getParentId() + "\"";
 
         String resourceStr;
-        if(choice.getResources().size() == 0){
-            resourceStr = "@.resources == []";
+        if(dto.getResourceIds().size() == 0){
+            resourceStr = "@.resourceIds == []";
         }
         else{
             // If resources are present, check if each of choice's resources can be found in the json resources list
             // and if that list has the same length as choice's resource list.
             resourceStr = "[";
-            for(Resource resource : choice.getResources()){
-                resourceStr += "\"" + resource.getName() + "\",";
+            for(Long resourceId : dto.getResourceIds()){
+                resourceStr += "\"" + resourceId + "\",";
             }
             resourceStr = resourceStr.substring(0, resourceStr.length() - 1);
-            resourceStr += "] subsetof @.resources[*].name && @.resources.length() ==" + choice.getResources().size();
+            resourceStr += "] subsetof @.resourceIds[*] && @.resourceIds.length() ==" + choice.getResources().size();
         }
 
         return String.format("$.[?(%1$s && %2$s && %3$s)]", nameStr, parentStr, resourceStr);
@@ -265,7 +264,7 @@ class MenuChoiceIntegrationTests {
     @Test    
     void createChoice_withBlankParentName_withNoResources() throws Exception{
         // Given
-        MenuChoiceDTO dto = new MenuChoiceDTO("new", null, Collections.emptyList());
+        MenuChoiceCreateDTO dto = new MenuChoiceCreateDTO("new", null, Collections.emptyList());
         MenuChoice choice = new MenuChoice("new", null, Collections.emptyList());
         String inputJson = mapper.writeValueAsString(dto);
 
@@ -284,7 +283,7 @@ class MenuChoiceIntegrationTests {
     void createChoice_withPresentParentName_withMultipleResources() throws Exception{
         // Given
         menuChoiceRepository.save(entries.menuChoice1);
-        MenuChoiceDTO dto = new MenuChoiceDTO("new", entries.menuChoice1.getName(), Arrays.asList(entries.resource1.getName(), entries.resource2.getName()));
+        MenuChoiceCreateDTO dto = new MenuChoiceCreateDTO("new", entries.menuChoice1.getId(), Arrays.asList(entries.resource1.getId(), entries.resource2.getId()));
         MenuChoice choice = new MenuChoice("new", entries.menuChoice1, Arrays.asList(entries.resource1, entries.resource2));
         String inputJson = mapper.writeValueAsString(dto);
 
@@ -303,7 +302,7 @@ class MenuChoiceIntegrationTests {
     void createChoice_withDuplicateResources() throws Exception{
         // Given
         menuChoiceRepository.save(entries.menuChoice1);
-        MenuChoiceDTO dto = new MenuChoiceDTO("new", entries.menuChoice1.getName(), Arrays.asList(entries.resource1.getName(), entries.resource1.getName()));
+        MenuChoiceCreateDTO dto = new MenuChoiceCreateDTO("new", entries.menuChoice1.getId(), Arrays.asList(entries.resource1.getId(), entries.resource1.getId()));
         MenuChoice choice = new MenuChoice("new", entries.menuChoice1, Collections.singletonList(entries.resource1));
         String inputJson = mapper.writeValueAsString(dto);
 
@@ -321,7 +320,7 @@ class MenuChoiceIntegrationTests {
     @Test    
     void createChoice_withEmptyName() throws Exception{
         // Given
-        MenuChoiceDTO dto = new MenuChoiceDTO(null, null, Collections.emptyList());
+        MenuChoiceCreateDTO dto = new MenuChoiceCreateDTO(null, null, Collections.emptyList());
         String inputJson = mapper.writeValueAsString(dto);
 
         // When, Then
@@ -334,7 +333,7 @@ class MenuChoiceIntegrationTests {
     void createChoice_withDuplicateName() throws Exception{
         // Given
         menuChoiceRepository.save(entries.menuChoice1);
-        MenuChoiceDTO dto = new MenuChoiceDTO(entries.menuChoice1.getName(), null, Collections.emptyList());
+        MenuChoiceCreateDTO dto = new MenuChoiceCreateDTO(entries.menuChoice1.getName(), null, Collections.emptyList());
         String inputJson = mapper.writeValueAsString(dto);
 
         // When, Then
@@ -349,7 +348,7 @@ class MenuChoiceIntegrationTests {
     void createChoice_withNotPresentParentName() throws Exception{
         // Given
         menuChoiceRepository.save(entries.menuChoice1);
-        MenuChoiceDTO dto = new MenuChoiceDTO("new", "doesNotExist", Collections.emptyList());
+        MenuChoiceCreateDTO dto = new MenuChoiceCreateDTO("new", -1L, Collections.emptyList());
         String inputJson = mapper.writeValueAsString(dto);
 
         // When, Then
@@ -364,7 +363,7 @@ class MenuChoiceIntegrationTests {
     void createChoice_withNotPresentResourceName() throws Exception{
         // Given
         menuChoiceRepository.save(entries.menuChoice1);
-        MenuChoiceDTO dto = new MenuChoiceDTO("new", null, Collections.singletonList("doesNotExist"));
+        MenuChoiceCreateDTO dto = new MenuChoiceCreateDTO("new", null, Collections.singletonList(-1L));
         String inputJson = mapper.writeValueAsString(dto);
 
         // When, Then
@@ -375,26 +374,26 @@ class MenuChoiceIntegrationTests {
         assertThat(notPresentChoice.isPresent()).isFalse();
     }
 
-    @Test    
-    void createChoice_withSelfParentName() throws Exception{
-        // Given
-        menuChoiceRepository.save(entries.menuChoice1);
-        MenuChoiceDTO dto = new MenuChoiceDTO("new", "new", Collections.emptyList());
-        String inputJson = mapper.writeValueAsString(dto);
-
-        // When, Then
-        mockMvc.perform(post("/api/v1/menuchoices/").content(inputJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError());
-
-        Optional<MenuChoice> notPresentChoice = menuChoiceRepository.findMenuChoiceByName("new");
-        assertThat(notPresentChoice.isPresent()).isFalse();
-    }
+//    @Test
+//    void createChoice_withSelfParentName() throws Exception{
+//        // Given
+//        menuChoiceRepository.save(entries.menuChoice1);
+//        MenuChoiceCreateDTO dto = new MenuChoiceCreateDTO("new", "new", Collections.emptyList());
+//        String inputJson = mapper.writeValueAsString(dto);
+//
+//        // When, Then
+//        mockMvc.perform(post("/api/v1/menuchoices/").content(inputJson).contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().is4xxClientError());
+//
+//        Optional<MenuChoice> notPresentChoice = menuChoiceRepository.findMenuChoiceByName("new");
+//        assertThat(notPresentChoice.isPresent()).isFalse();
+//    }
 
     @Test    
     void updateChoice_withNotPresentId() throws Exception{
         // Given
         MenuChoice choice = new MenuChoice("new", null, Collections.emptyList());
-        MenuChoiceDTO dto = new MenuChoiceDTO("new", null, Collections.emptyList());
+        MenuChoiceCreateDTO dto = new MenuChoiceCreateDTO("new", null, Collections.emptyList());
         String inputJson = mapper.writeValueAsString(dto);
         Long id = 1L;
         for(MenuChoice c : menuChoiceRepository.findAll()){
@@ -423,7 +422,7 @@ class MenuChoiceIntegrationTests {
         menuChoiceRepository.save(entries.menuChoice1);
         String oldName = entries.menuChoice1.getName();
         MenuChoice choice = new MenuChoice("new", null, Collections.emptyList());
-        MenuChoiceDTO dto = new MenuChoiceDTO("new", null, Collections.emptyList());
+        MenuChoiceCreateDTO dto = new MenuChoiceCreateDTO("new", null, Collections.emptyList());
         String inputJson = mapper.writeValueAsString(dto);
         Long id = entries.menuChoice1.getId();
         choice.setId(id);
@@ -445,9 +444,10 @@ class MenuChoiceIntegrationTests {
         // Given
         menuChoiceRepository.save(entries.menuChoice1);
         String oldName = entries.menuChoice1.getName();
-        MenuChoiceDTO dto = new MenuChoiceDTO("new", "new", Collections.emptyList());
-        String inputJson = mapper.writeValueAsString(dto);
         Long id = entries.menuChoice1.getId();
+        MenuChoiceCreateDTO dto = new MenuChoiceCreateDTO("new", id, Collections.emptyList());
+        String inputJson = mapper.writeValueAsString(dto);
+
 
         // When, Then
         mockMvc.perform(put("/api/v1/menuchoices/{id}", id).content(inputJson).contentType(MediaType.APPLICATION_JSON))
@@ -466,7 +466,7 @@ class MenuChoiceIntegrationTests {
         menuChoiceRepository.save(entries.menuChoice1);
         menuChoiceRepository.save(entries.menuChoice2); // child
         String oldName = entries.menuChoice1.getName();
-        MenuChoiceDTO dto = new MenuChoiceDTO("new", entries.menuChoice2.getName(), Collections.emptyList());
+        MenuChoiceCreateDTO dto = new MenuChoiceCreateDTO("new", entries.menuChoice2.getId(), Collections.emptyList());
         String inputJson = mapper.writeValueAsString(dto);
         Long id = entries.menuChoice1.getId();
 
@@ -488,7 +488,7 @@ class MenuChoiceIntegrationTests {
         menuChoiceRepository.save(entries.menuChoice2); // child
         menuChoiceRepository.save(entries.menuChoice4); // descendent
         String oldName = entries.menuChoice1.getName();
-        MenuChoiceDTO dto = new MenuChoiceDTO("new", entries.menuChoice4.getName(), Collections.emptyList());
+        MenuChoiceCreateDTO dto = new MenuChoiceCreateDTO("new", entries.menuChoice4.getId(), Collections.emptyList());
         String inputJson = mapper.writeValueAsString(dto);
         Long id = entries.menuChoice1.getId();
 

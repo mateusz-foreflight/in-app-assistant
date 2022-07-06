@@ -1,38 +1,18 @@
 package com.foreflight.apphelper.domain;
 
-public class ResourceDTO {
-    private Long id;
+public class ResourceCreateDTO {
     private String name;
     private String link;
     private Long sourceId;
 
-    public static ResourceDTO assemble(Resource resource){
-        ResourceDTO dto = new ResourceDTO();
+    public ResourceCreateDTO(){
 
-        dto.setId(resource.getId());
-        dto.setName(resource.getName());
-        dto.setLink(resource.getLink());
-        dto.setSourceId(resource.getSource().getId());
-
-        return dto;
     }
 
-    public ResourceDTO() {
-    }
-
-    public ResourceDTO(Long id, String name, String link, Long sourceId) {
-        this.id = id;
+    public ResourceCreateDTO(String name, String link, Long sourceId) {
         this.name = name;
         this.link = link;
         this.sourceId = sourceId;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {

@@ -1,6 +1,7 @@
 package com.foreflight.apphelper.controller;
 
 import com.foreflight.apphelper.domain.Metric;
+import com.foreflight.apphelper.domain.MetricCreateDTO;
 import com.foreflight.apphelper.domain.MetricDTO;
 import com.foreflight.apphelper.service.MetricService;
 import org.springframework.web.bind.annotation.*;
@@ -19,22 +20,22 @@ public class MetricController {
     }
 
     @GetMapping
-    public List<Metric> getAllMetrics() {
+    public List<MetricDTO> getAllMetrics() {
         return metricService.getAllMetrics();
     }
 
     @GetMapping(path = "{metricId}")
-    public Optional<Metric> getMetricById(@PathVariable("metricId") Long id){
+    public Optional<MetricDTO> getMetricById(@PathVariable("metricId") Long id){
         return metricService.getMetricById(id);
     }
 
     @PostMapping
-    public Metric createMetric(@RequestBody MetricDTO metric){
+    public MetricDTO createMetric(@RequestBody MetricCreateDTO metric){
         return metricService.addMetric(metric);
     }
 
     @PutMapping(path = "{metricId}")
-    public Metric updateMetric(@RequestBody MetricDTO metric, @PathVariable("metricId") Long id){
+    public MetricDTO updateMetric(@RequestBody MetricCreateDTO metric, @PathVariable("metricId") Long id){
         return metricService.updateMetric(metric, id);
     }
 

@@ -1,8 +1,6 @@
 package com.foreflight.apphelper.service;
 
-import com.foreflight.apphelper.domain.Resource;
-import com.foreflight.apphelper.domain.Source;
-import com.foreflight.apphelper.domain.SourceDTO;
+import com.foreflight.apphelper.domain.*;
 import com.foreflight.apphelper.repository.ResourceRepository;
 import com.foreflight.apphelper.repository.SourceRepository;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -10,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class SourceService {
@@ -24,34 +23,30 @@ public class SourceService {
         this.resourceRepository = resourceRepository;
     }
 
-    public List<Source> getAllSources() {
-        return sourceRepository.findAll();
+    public List<SourceDTO> getAllSources() {
+        return sourceRepository.findAll().stream().map(SourceDTO::assemble).collect(Collectors.toList());
     }
 
-    public Optional<Source> getSourceById(Long id) {
-        return sourceRepository.findSourceById(id);
+    public Optional<SourceDTO> getSourceById(Long id) {
+        return sourceRepository.findSourceById(id).map(SourceDTO::assemble);
     }
 
-    public Optional<Source> getSourceByName(String name) {
-        return sourceRepository.findSourceByName(name);
-    }
-
-    public Source addSource(SourceDTO source) {
+    public SourceDTO addSource(SourceCreateDTO source) {
         Source newSource = unpackDTO(source);
-        return sourceRepository.save(newSource);
+        return SourceDTO.assemble(sourceRepository.save(newSource));
     }
 
-    public Source updateSource(SourceDTO source, Long id){
+    public SourceDTO updateSource(SourceCreateDTO source, Long id){
         Source newSource = unpackDTO(source);
         return sourceRepository.findSourceById(id)
                 .map(foundSource -> {
                     foundSource.setName(newSource.getName());
                     foundSource.setLink(newSource.getLink());
-                    return sourceRepository.save(foundSource);
+                    return SourceDTO.assemble(sourceRepository.save(foundSource));
                 })
                 .orElseGet(() -> {
                     newSource.setId(id);
-                    return sourceRepository.save(newSource);
+                    return SourceDTO.assemble(sourceRepository.save(newSource));
                 });
     }
 
@@ -78,7 +73,7 @@ public class SourceService {
         }
     }
 
-    private Source unpackDTO(SourceDTO dto){
+    private Source unpackDTO(SourceCreateDTO dto){
         Source source = new Source();
 
         if(dto.getName() == null){

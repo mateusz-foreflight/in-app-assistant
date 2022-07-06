@@ -29,157 +29,157 @@ public class ResourceServiceTests {
 
     private ResourceService resourceService;
 
-    @BeforeEach
-    void init(){
-        resourceRepository = mock(ResourceRepository.class);
-        sourceRepository = mock(SourceRepository.class);
-
-        resourceService = new ResourceService(resourceRepository, sourceRepository);
-    }
-
-    @Test
-    void getAllResources_works(){
-        // Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
-
-        // When
-        List<Resource> actual = resourceService.getAllResources();
-
-        // Then
-        List<Resource> expected = mockProfile.resources;
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    void getResourceById_withValidId(){
-        // Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
-
-        // When
-        Optional<Resource> actual = resourceService.getResourceById(1L);
-
-        // Then
-        assertThat(actual.isPresent()).isTrue();
-        assertThat(actual.get()).isEqualTo(mockProfile.resource1);
-    }
-
-    @Test
-    void getResourceById_withInvalidId(){
-        // Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
-
-        // When
-        Optional<Resource> actual = resourceService.getResourceById(15L);
-
-        // Then
-        assertThat(actual.isPresent()).isFalse();
-    }
-
-    @Test
-    void getResourceByName_withValidName(){
-        // Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
-
-        // When
-        Optional<Resource> actual = resourceService.getResourceByName("resource1");
-
-        // Then
-        assertThat(actual.isPresent()).isTrue();
-        assertThat(actual.get()).isEqualTo(mockProfile.resource1);
-    }
-
-    @Test
-    void getResourceByName_withInvalidName(){
-        // Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
-
-        // When
-        Optional<Resource> actual = resourceService.getResourceByName("doesNotExist");
-
-        // Then
-        assertThat(actual.isPresent()).isFalse();
-    }
-
-    @Test
-    void addResource_withValidResource(){
-        // Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
-        ResourceDTO dto = new ResourceDTO("new", "newLink", "source1");
-
-        // When
-        Resource actual = resourceService.addResource(dto);
-        actual.setId(5L);
-
-        // Then
-        Resource expected = new Resource("new", "newLink", mockProfile.source1);
-        expected.setId(5L);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    void addResource_withInvalidResource_withInvalidName(){
-        // Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
-        ResourceDTO dto = new ResourceDTO(null, "newLink", "source1");
-
-        // When, Then
-        assertThatExceptionOfType(IllegalStateException.class)
-                .isThrownBy(() -> resourceService.addResource(dto))
-                .withMessageContaining("name")
-                .withMessageContaining("null");
-    }
-
-    @Test
-    void updateResource_withPresentId(){
-        // Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
-        ResourceDTO dto = new ResourceDTO("new", "newLink", "source1");
-
-        // When
-        Resource actual = resourceService.updateResource(dto, 1L);
-
-        // Then
-        Resource expected = new Resource("new", "newLink", mockProfile.source1);
-        expected.setId(1L);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    void updateResource_withNotPresentId(){
-        // Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
-        ResourceDTO dto = new ResourceDTO("new", "newLink", "source1");
-
-        // When
-        Resource actual = resourceService.updateResource(dto, 15L);
-
-        // Then
-        Resource expected = new Resource("new", "newLink", mockProfile.source1);
-        expected.setId(15L);
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    void deleteResource_withValidId(){
-        //Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
-
-        // When
-        resourceService.deleteResource(1L, false);
-
-        // Then
-        verify(resourceRepository).deleteById(1L);
-    }
-
-    @Test
-    void deleteChoice_withInvalidId(){
-        //Given
-        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
-
-        // When, Then
-        assertThatExceptionOfType(IllegalStateException.class)
-                .isThrownBy(() -> resourceService.deleteResource(15L, false))
-                .withMessageContaining("id")
-                .withMessageContaining(String.valueOf(15));
-    }
+//    @BeforeEach
+//    void init(){
+//        resourceRepository = mock(ResourceRepository.class);
+//        sourceRepository = mock(SourceRepository.class);
+//
+//        resourceService = new ResourceService(resourceRepository, sourceRepository);
+//    }
+//
+//    @Test
+//    void getAllResources_works(){
+//        // Given
+//        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
+//
+//        // When
+//        List<Resource> actual = resourceService.getAllResources();
+//
+//        // Then
+//        List<Resource> expected = mockProfile.resources;
+//        assertThat(actual).isEqualTo(expected);
+//    }
+//
+//    @Test
+//    void getResourceById_withValidId(){
+//        // Given
+//        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
+//
+//        // When
+//        Optional<Resource> actual = resourceService.getResourceById(1L);
+//
+//        // Then
+//        assertThat(actual.isPresent()).isTrue();
+//        assertThat(actual.get()).isEqualTo(mockProfile.resource1);
+//    }
+//
+//    @Test
+//    void getResourceById_withInvalidId(){
+//        // Given
+//        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
+//
+//        // When
+//        Optional<Resource> actual = resourceService.getResourceById(15L);
+//
+//        // Then
+//        assertThat(actual.isPresent()).isFalse();
+//    }
+//
+//    @Test
+//    void getResourceByName_withValidName(){
+//        // Given
+//        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
+//
+//        // When
+//        Optional<Resource> actual = resourceService.getResourceByName("resource1");
+//
+//        // Then
+//        assertThat(actual.isPresent()).isTrue();
+//        assertThat(actual.get()).isEqualTo(mockProfile.resource1);
+//    }
+//
+//    @Test
+//    void getResourceByName_withInvalidName(){
+//        // Given
+//        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
+//
+//        // When
+//        Optional<Resource> actual = resourceService.getResourceByName("doesNotExist");
+//
+//        // Then
+//        assertThat(actual.isPresent()).isFalse();
+//    }
+//
+//    @Test
+//    void addResource_withValidResource(){
+//        // Given
+//        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
+//        ResourceDTO dto = new ResourceDTO("new", "newLink", "source1");
+//
+//        // When
+//        Resource actual = resourceService.addResource(dto);
+//        actual.setId(5L);
+//
+//        // Then
+//        Resource expected = new Resource("new", "newLink", mockProfile.source1);
+//        expected.setId(5L);
+//        assertThat(actual).isEqualTo(expected);
+//    }
+//
+//    @Test
+//    void addResource_withInvalidResource_withInvalidName(){
+//        // Given
+//        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
+//        ResourceDTO dto = new ResourceDTO(null, "newLink", "source1");
+//
+//        // When, Then
+//        assertThatExceptionOfType(IllegalStateException.class)
+//                .isThrownBy(() -> resourceService.addResource(dto))
+//                .withMessageContaining("name")
+//                .withMessageContaining("null");
+//    }
+//
+//    @Test
+//    void updateResource_withPresentId(){
+//        // Given
+//        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
+//        ResourceDTO dto = new ResourceDTO("new", "newLink", "source1");
+//
+//        // When
+//        Resource actual = resourceService.updateResource(dto, 1L);
+//
+//        // Then
+//        Resource expected = new Resource("new", "newLink", mockProfile.source1);
+//        expected.setId(1L);
+//        assertThat(actual).isEqualTo(expected);
+//    }
+//
+//    @Test
+//    void updateResource_withNotPresentId(){
+//        // Given
+//        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
+//        ResourceDTO dto = new ResourceDTO("new", "newLink", "source1");
+//
+//        // When
+//        Resource actual = resourceService.updateResource(dto, 15L);
+//
+//        // Then
+//        Resource expected = new Resource("new", "newLink", mockProfile.source1);
+//        expected.setId(15L);
+//        assertThat(actual).isEqualTo(expected);
+//    }
+//
+//    @Test
+//    void deleteResource_withValidId(){
+//        //Given
+//        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
+//
+//        // When
+//        resourceService.deleteResource(1L, false);
+//
+//        // Then
+//        verify(resourceRepository).deleteById(1L);
+//    }
+//
+//    @Test
+//    void deleteChoice_withInvalidId(){
+//        //Given
+//        MockProfile2 mockProfile = new MockProfile2(resourceRepository, sourceRepository);
+//
+//        // When, Then
+//        assertThatExceptionOfType(IllegalStateException.class)
+//                .isThrownBy(() -> resourceService.deleteResource(15L, false))
+//                .withMessageContaining("id")
+//                .withMessageContaining(String.valueOf(15));
+//    }
 }
