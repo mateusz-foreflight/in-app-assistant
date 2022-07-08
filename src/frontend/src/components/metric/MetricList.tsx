@@ -23,9 +23,9 @@ class MetricList extends React.Component<MetricListProps, {}> {
                     searchCallback={this.props.searchCallback}
                     columnFuncs={[
                         metric => {return {raw: <div>{metric.answerFound ? "Yes" : "NO"}</div>}},
-                        metric => new Date(metric.timestamp).toLocaleString(),
-                        metric => metric.ticketLink,
-                        metric => metric.userName
+                        metric => new Date(metric.timestamp ?? "").toLocaleString(),
+                        metric => metric.ticketLink ?? "",
+                        metric => metric.userName ?? ""
                     ]}
                 />
             </div>

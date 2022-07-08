@@ -1,10 +1,10 @@
 import React from "react";
 import MenuPreview from "../components/common/menuPreview/MenuPreview";
 import Navbar from "../components/common/Navbar";
-import {Button, Row, TextInput, Text, Textarea, ButtonGroup} from "@foreflight/ffui";
+import {Button, Row, TextInput, Textarea} from "@foreflight/ffui";
 import MenuChoice from "../types/MenuChoice";
 import MetricDTO from "../types/MetricDTO";
-import {addMetric} from "../client";
+import {api} from "../client";
 import Resource from "../types/Resource";
 
 type UserPreviewState = {
@@ -13,8 +13,8 @@ type UserPreviewState = {
     isFeedbackDialogOpen: boolean
     userName: string
     feedbackVal: string
-    visitedChoiceNames: Set<string>
-    visitedResourceNames: Set<string>
+    visitedChoiceIds: Set<number>,
+    visitedResourceIds: Set<number>
 }
 
 class UserPreviewPage extends React.Component<{}, UserPreviewState> {
@@ -27,20 +27,20 @@ class UserPreviewPage extends React.Component<{}, UserPreviewState> {
             isFeedbackDialogOpen: false,
             userName: "",
             feedbackVal: "",
-            visitedChoiceNames: new Set<string>(),
-            visitedResourceNames: new Set<string>()
+            visitedChoiceIds: new Set<number>(),
+            visitedResourceIds: new Set<number>()
         }
     }
 
     addVisitedMenuChoice = (choice: MenuChoice) => {
-        this.setState(({visitedChoiceNames}) => ({
-          visitedChoiceNames: new Set(visitedChoiceNames).add(choice.name)
+        this.setState(({visitedChoiceIds}) => ({
+          visitedChoiceIds: new Set(visitedChoiceIds).add(choice.id)
         }))
     }
 
     addVisitedResource = (resource: Resource) => {
-        this.setState(({visitedResourceNames}) => ({
-            visitedResourceNames: new Set(visitedResourceNames).add(resource.name)
+        this.setState(({visitedResourceIds}) => ({
+            visitedResourceIds: new Set(visitedResourceIds).add(resource.id)
         }))
     }
 
@@ -53,14 +53,14 @@ class UserPreviewPage extends React.Component<{}, UserPreviewState> {
     async generateMetric(answerFound: boolean, feedbackPresent: boolean) {
         let timestamp = new Date().toISOString();
 
-        let menuchoiceNames: string[] = [];
-        for(const choice of this.state.visitedChoiceNames){
-            menuchoiceNames.push(choice);
+        let menuchoiceIds: number[] = [];
+        for(const id of this.state.visitedChoiceIds){
+            menuchoiceIds.push(id);
         }
 
-        let resourceNames: string[] = [];
-        for(const resource of this.state.visitedResourceNames){
-            resourceNames.push(resource)
+        let resourceIds: number[] = [];
+        for(const id of this.state.visitedResourceIds){
+            resourceIds.push(id)
         }
 
         let feedback = feedbackPresent ? this.state.feedbackVal : "";
@@ -71,11 +71,11 @@ class UserPreviewPage extends React.Component<{}, UserPreviewState> {
             ticketLink: "",
             userName: this.state.userName,
             userFeedback: feedback,
-            menuchoiceNames: menuchoiceNames,
-            resourceNames: resourceNames
+            menuchoiceIds: menuchoiceIds,
+            resourceIds: resourceIds
         }
 
-        await addMetric(metric);
+        await api.addMetric(metric);
     }
 
 

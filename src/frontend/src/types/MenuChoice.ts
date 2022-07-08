@@ -3,8 +3,8 @@ import Resource from "./Resource";
 type MenuChoice = {
     id: number,
     name: string,
-    parent: MenuChoice,
-    resources: Resource[]
+    parentId: number | null,
+    resourceIds: number[]
 }
 
 export default MenuChoice;

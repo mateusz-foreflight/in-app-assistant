@@ -1,12 +1,12 @@
 
 type MetricDTO = {
     answerFound: boolean,
-    timestamp: string,
-    ticketLink: string,
-    userName: string,
-    userFeedback: string,
-    menuchoiceNames: string[],
-    resourceNames: string[]
+    timestamp: string | null,
+    ticketLink: string | null,
+    userName: string | null,
+    userFeedback: string | null,
+    menuchoiceIds: number[],
+    resourceIds: number[]
 }
 
 export default MetricDTO;

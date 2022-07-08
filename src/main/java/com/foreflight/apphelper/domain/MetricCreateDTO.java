@@ -1,6 +1,7 @@
 package com.foreflight.apphelper.domain;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MetricCreateDTO {
@@ -9,8 +10,8 @@ public class MetricCreateDTO {
     private String ticketLink;
     private String userName;
     private String userFeedback;
-    private List<Long> menuchoiceIds;
-    private List<Long> resourceIds;
+    private List<Long> menuchoiceIds = new ArrayList<>();
+    private List<Long> resourceIds = new ArrayList<>();
 
     public MetricCreateDTO(){}
 

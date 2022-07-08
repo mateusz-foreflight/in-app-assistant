@@ -1,12 +1,12 @@
 import React from "react";
 import SourceList from "../components/source/SourceList";
 import Source from "../types/Source";
-import {extract, getAllSources} from "../client";
 import SourceEditor from "../components/source/SourceEditor";
 import Navbar from "../components/common/Navbar";
+import {cache} from "../components/common/Cache";
 
 type SourceModificationState = {
-    sources: Source[];
+    //sources: Source[];
     selectedSource: Source | null;
     searchVal: string
     displayedSources: Source[]
@@ -17,7 +17,7 @@ class SourceModificationPage extends React.Component<{}, SourceModificationState
         super(props);
 
         this.state = {
-            sources: [],
+            //sources: [],
             selectedSource: null,
             searchVal: "",
             displayedSources: []
@@ -25,9 +25,8 @@ class SourceModificationPage extends React.Component<{}, SourceModificationState
     }
 
     updateSources = async () => {
-        this.setState({
-            sources: await extract<Source>(getAllSources())
-        })
+        await cache.updateSources();
+        this.updateDisplayedSources();
     }
 
     updateSelectedSource = (selSource: Source) => {
@@ -39,7 +38,7 @@ class SourceModificationPage extends React.Component<{}, SourceModificationState
     updateDisplayedSources() {
         let displayedSources: Source[] = [];
 
-        for(const source of this.state.sources){
+        for(const source of cache.getAllSources()){
             if(source.name.search(new RegExp(`${this.state.searchVal}`, "i")) >= 0){
                 displayedSources.push(source);
             }
@@ -61,7 +60,7 @@ class SourceModificationPage extends React.Component<{}, SourceModificationState
     }
 
     componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<SourceModificationState>) {
-        if(this.state.searchVal !== prevState.searchVal || this.state.sources !== prevState.sources){
+        if(this.state.searchVal !== prevState.searchVal){
             this.updateDisplayedSources();
         }
     }

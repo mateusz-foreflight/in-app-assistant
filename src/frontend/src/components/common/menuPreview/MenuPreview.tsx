@@ -1,9 +1,9 @@
 import React from "react";
 import {Button, Row} from "@foreflight/ffui";
-import {getChildrenById, getTopLevelMenuChoices} from "../../../client";
 import MenuChoice from "../../../types/MenuChoice";
 import ResourceView from "./ResourceView";
 import Resource from "../../../types/Resource";
+import {cache} from "../Cache";
 
 type MenuChoiceSelectable = MenuChoice &
     {selected: boolean}
@@ -31,15 +31,9 @@ class MenuPreview extends React.Component<MenuPreviewProps, MenuPreviewState>{
     }
 
     async componentDidMount() {
+        await cache.refresh();
 
-        let topLevelChoices: MenuChoiceSelectable[] = [];
-        await getTopLevelMenuChoices().then(response => {
-            return response.json() as Promise<any[]>;
-        }).then(data =>{
-            data.forEach((choice) =>{
-                topLevelChoices.push(choice as MenuChoiceSelectable)
-            })
-        });
+        let topLevelChoices: MenuChoiceSelectable[] = cache.getTopLevelMenuChoices() as MenuChoiceSelectable[];
 
         this.setState((state) =>{
             let newChoices: MenuChoiceSelectable[][] = [];
@@ -49,8 +43,6 @@ class MenuPreview extends React.Component<MenuPreviewProps, MenuPreviewState>{
             })
             return {choices: newChoices}
         })
-
-        console.log(this.state);
     }
 
     async buttonClick(row: number, choiceIdx: number){
@@ -65,53 +57,45 @@ class MenuPreview extends React.Component<MenuPreviewProps, MenuPreviewState>{
 
         // Get children of selected choice
         let choiceSelected = this.state.choices[row][choiceIdx];
-        let children: MenuChoiceSelectable[] = [];
-        await getChildrenById(choiceSelected.id).then(response =>{
-            return response.json() as Promise<any[]>
-        }).then(data => {
-            data.forEach((child) => {
-                children.push(child as MenuChoiceSelectable);
-            })
-        })
+        let children: MenuChoiceSelectable[] = cache.getMenuChoiceChildrenFromId(choiceSelected.id) as MenuChoiceSelectable[];
         children.forEach((child) => {
             child.selected = false;
         })
 
 
 
-        this.setState((state) =>{
-            let newChoices: MenuChoiceSelectable[][] = state.choices;
-            let newDisplayResourceView: boolean = state.displayResourceView;
-            let newResourcesToDisplay: Resource[];
+        let newChoices: MenuChoiceSelectable[][] = this.state.choices;
+        let newDisplayResourceView: boolean = this.state.displayResourceView;
+        let newResourcesToDisplay: Resource[];
 
-            // The clicked choice is marked as selected, others are deselected
-            newChoices[row].forEach((choice, idx) => {
-                choice.selected = choiceIdx === idx;
-            })
+        // The clicked choice is marked as selected, others are deselected
+        newChoices[row].forEach((choice, idx) => {
+            choice.selected = choiceIdx === idx;
+        })
 
-            // Clear all rows after the selected one
-            for(let r = row + 1; r < newChoices.length; r++){
-                newChoices[r] = []
-            }
+        // Clear all rows after the selected one
+        for (let r = row + 1; r < newChoices.length; r++) {
+            newChoices[r] = []
+        }
 
-            // Add new children of selected choice to state
-            newChoices.push(children);
+        // Add new children of selected choice to state
+        newChoices.push(children);
 
-            if(children.length === 0){
-                newDisplayResourceView = true;
-                newResourcesToDisplay = choiceSelected.resources.slice();
-                console.log(newResourcesToDisplay)
-            }
-            else{
-                newDisplayResourceView = false;
-                newResourcesToDisplay = [];
-            }
+        if (children.length === 0) {
+            newDisplayResourceView = true;
+            newResourcesToDisplay = (await cache.getResourcesFromIds(choiceSelected.resourceIds)).slice();
+            //newResourcesToDisplay = [];
 
-            return {
-                choices: newChoices,
-                displayResourceView: newDisplayResourceView,
-                resourcesToDisplay: newResourcesToDisplay
-            };
+        } else {
+            newDisplayResourceView = false;
+            newResourcesToDisplay = [];
+        }
+
+
+        this.setState({
+            choices: newChoices,
+            displayResourceView: newDisplayResourceView,
+            resourcesToDisplay: newResourcesToDisplay
         })
     }
 

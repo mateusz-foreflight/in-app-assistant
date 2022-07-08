@@ -1,6 +1,7 @@
 import React from "react";
 import Metric from "../../types/Metric";
 import {Heading, Row, Textarea, TextInput} from "@foreflight/ffui";
+import {cache} from "../common/Cache";
 
 type MetricViewPanelProps = {
     metric: Metric | null
@@ -17,7 +18,7 @@ class MetricViewPanel extends React.Component<MetricViewPanelProps, {}>{
                     <Heading h3>User Name:</Heading>
                     <Row width={"100%"} style={{"margin-top": "-15px"}}>
                         <TextInput
-                            value={this.props.metric ? this.props.metric.userName : ""}
+                            value={this.props.metric ? this.props.metric.userName ?? "" : ""}
                             readOnly
                             placeholder={""}
                         />
@@ -28,7 +29,7 @@ class MetricViewPanel extends React.Component<MetricViewPanelProps, {}>{
                     <Heading h3>Ticket Link:</Heading>
                     <Row width={"100%"} style={{"margin-top": "-15px"}}>
                         <TextInput
-                            value={this.props.metric ? this.props.metric.ticketLink : ""}
+                            value={this.props.metric ? this.props.metric.ticketLink ?? "" : ""}
                             readOnly
                             placeholder={""}
                         />
@@ -39,7 +40,7 @@ class MetricViewPanel extends React.Component<MetricViewPanelProps, {}>{
                     <Heading h3>Timestamp:</Heading>
                     <Row width={"100%"} style={{"margin-top": "-15px"}}>
                         <TextInput
-                            value={this.props.metric ? new Date(this.props.metric.timestamp).toLocaleString() : ""}
+                            value={this.props.metric ? new Date(this.props.metric.timestamp ?? "").toLocaleString() : ""}
                             readOnly
                             placeholder={""}
                         />
@@ -54,7 +55,7 @@ class MetricViewPanel extends React.Component<MetricViewPanelProps, {}>{
                                       placeholder={"None provided"}
                                       minHeight={"100px"}
                                       disabled={this.props.metric === null}
-                                      value={this.props.metric ? this.props.metric.userFeedback : ""}
+                                      value={this.props.metric ? this.props.metric.userFeedback ?? "" : ""}
                             />
                         </Row>
                     </Row>
@@ -63,8 +64,8 @@ class MetricViewPanel extends React.Component<MetricViewPanelProps, {}>{
                 <Row width={"100%"} flexDirection={"column"} margin={"10px"}>
                     <Heading h3>Visited Menu Choices:</Heading>
                     <Row flexDirection={"Column"}>
-                        {this.props.metric ? this.props.metric.menuChoices.map(choice => (
-                            <a>{choice.name}</a>
+                        {this.props.metric ? cache.getMenuChoicesFromIds(this.props.metric.menuchoiceIds).map(choice => (
+                            <div>{choice.name}</div>
                         )) : ""}
                     </Row>
                 </Row>
@@ -72,8 +73,8 @@ class MetricViewPanel extends React.Component<MetricViewPanelProps, {}>{
                 <Row width={"100%"} flexDirection={"column"} margin={"10px"}>
                     <Heading h3>Visited Resources:</Heading>
                     <Row flexDirection={"Column"}>
-                        {this.props.metric ? this.props.metric.resources.map(resource => (
-                            <a href={resource.link} target="_blank">{resource.name}</a>
+                        {this.props.metric ? cache.getResourcesFromIds(this.props.metric.resourceIds).map(resource => (
+                            <a href={resource.link} target="_blank" rel="noreferrer">{resource.name}</a>
                         )) : ""}
                     </Row>
                 </Row>

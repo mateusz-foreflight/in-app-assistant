@@ -1,7 +1,7 @@
 import React from "react";
 import Source from "../../types/Source";
 import {Button, Heading, IError, Row, TextInput} from "@foreflight/ffui";
-import {addSource, deleteSource, updateSource} from "../../client";
+import {api} from "../../client";
 import SourceDTO from "../../types/SourceDTO";
 
 enum modification {
@@ -39,12 +39,12 @@ class SourceEditor extends React.Component<SourceEditorProps, SourceEditorState>
 
     async deleteSource(deleteId: number){
         let deleteFailed = false;
-        await deleteSource(deleteId, false).catch(() => deleteFailed = true);
+        await api.deleteSource(deleteId, false).catch(() => deleteFailed = true);
 
         if(deleteFailed){
             if(window.confirm("Warning:\nDeleting this source will result in all resources that use it being removed " +
                 "as well.\n\nDelete anyway?")){
-                await deleteSource(deleteId, true);
+                await api.deleteSource(deleteId, true);
             }
             else{
                 return;
@@ -62,13 +62,13 @@ class SourceEditor extends React.Component<SourceEditorProps, SourceEditorState>
         }
 
         // Check for input errors
-        let errorOccured: boolean = false;
+        let errorOccurred: boolean = false;
 
         if(newSource.name === ""){
             this.setState({
                 nameInputErrors: [{type: "error", message: "Name cannot be blank"}]
             })
-            errorOccured = true;
+            errorOccurred = true;
         }
         else{
             this.setState({
@@ -80,7 +80,7 @@ class SourceEditor extends React.Component<SourceEditorProps, SourceEditorState>
             this.setState({
                 linkInputErrors: [{type: "error", message: "Link cannot be blank"}]
             })
-            errorOccured = true;
+            errorOccurred = true;
         }
         else{
             this.setState({
@@ -88,15 +88,15 @@ class SourceEditor extends React.Component<SourceEditorProps, SourceEditorState>
             })
         }
 
-        if(errorOccured){
+        if(errorOccurred){
             return;
         }
 
         if(updateId){
-            await updateSource(updateId, newSource);
+            await api.updateSource(updateId, newSource);
         }
         else{
-            await addSource(newSource);
+            await api.addSource(newSource);
         }
 
         this.cancelFunc();

@@ -1,6 +1,7 @@
 import React from "react";
 import {Button, IColumn, IRow, Row, SortableTable} from "@foreflight/ffui";
 import Resource from "../../../types/Resource";
+import {cache} from "../Cache";
 
 type ResourceViewProps = {
     resources: Resource[];
@@ -37,7 +38,7 @@ class ResourceView extends React.Component<ResourceViewProps, {}>{
             })
             newRow.push(resource.name);
             newRow.push(resource.link);
-            newRow.push(resource.source.name);
+            newRow.push(cache.getSourceFromId(resource.sourceId)!.name);
             newRows.push(newRow);
         })
 

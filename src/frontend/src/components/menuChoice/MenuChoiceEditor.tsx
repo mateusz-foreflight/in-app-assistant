@@ -1,9 +1,10 @@
 import React from "react";
 import {Button, Option, Row, Select, TextInput, Heading, IError} from "@foreflight/ffui";
-import MenuChoiceWithChildren from "../../types/MenuChoiceWithChildren";
-import {addMenuChoice, deleteMenuChoice, updateMenuChoice} from "../../client";
 import MenuChoiceDTO from "../../types/MenuChoiceDTO";
 import Resource from "../../types/Resource";
+import MenuChoice from "../../types/MenuChoice";
+import {cache} from "../common/Cache";
+import {api} from "../../client";
 
 
 enum modification {
@@ -13,9 +14,7 @@ enum modification {
 }
 
 type MenuChoiceEditorProps = {
-    choiceBeingEdited: MenuChoiceWithChildren | null
-    allChoices: MenuChoiceWithChildren[]
-    allResources: Resource[]
+    choiceBeingEdited: MenuChoice | null
     deactivateCallback: () => void;
     saveCallback: () => void;
 }
@@ -24,8 +23,8 @@ type MenuChoiceEditorState = {
     modificationState: modification
     nameInputValue: string
     nameInputErrors: IError[],
-    parentNameInputValue: string | null
-    resourceNames: string[]
+    parentInputValue: MenuChoice | null,
+    resourceInputValues: Resource[]
 }
 
 class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoiceEditorState>{
@@ -37,19 +36,20 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
             modificationState: this.props.choiceBeingEdited ? modification.editing : modification.inactive,
             nameInputValue: (this.props.choiceBeingEdited?.name === undefined) ? "" : this.props.choiceBeingEdited.name,
             nameInputErrors: [],
-            parentNameInputValue: (this.props.choiceBeingEdited?.parent?.name === undefined) ? null : this.props.choiceBeingEdited.parent.name,
-            resourceNames: (this.props.choiceBeingEdited?.resources === undefined) ? [] : this.props.choiceBeingEdited.resources.map(resource => resource.name)
+            parentInputValue: (this.props.choiceBeingEdited !== null && this.props.choiceBeingEdited.parentId !== null) ? cache.getMenuChoiceFromId(this.props.choiceBeingEdited.parentId) : null,
+            resourceInputValues: (this.props.choiceBeingEdited !== null) ? cache.getResourcesFromIds(this.props.choiceBeingEdited.resourceIds) : [],
         }
     }
 
+
     async saveModifiedChoice(updateId: number | null) {
         let newChoice: MenuChoiceDTO = {
-            choiceName: this.state.nameInputValue,
-            parentName: this.state.parentNameInputValue,
-            resourceNames: this.state.resourceNames
+            name: this.state.nameInputValue,
+            parentId: this.state.parentInputValue?.id ?? null,
+            resourceIds: this.state.resourceInputValues.map(resource => resource.id)
         }
 
-        if(newChoice.choiceName === ""){
+        if(newChoice.name === ""){
             this.setState({
                 nameInputErrors: [{type: "error", message: "Name cannot be blank"}]
             })
@@ -61,10 +61,10 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
         })
 
         if(updateId){
-            await updateMenuChoice(updateId, newChoice);
+            await api.updateMenuChoice(updateId, newChoice);
         }
         else{
-            await addMenuChoice(newChoice);
+            await api.addMenuChoice(newChoice);
         }
 
 
@@ -73,14 +73,14 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
     }
 
     async deleteChoice(deleteId: number){
-        if(this.props.choiceBeingEdited!.children.length > 0){
+        if(cache.getMenuChoiceChildrenFromId(this.props.choiceBeingEdited!.id).length > 0){
             if(!window.confirm("Warning:\nDeleting this menu choice will result in all of its children being deleted " +
                 "as well.\n\nDelete anyway?")){
                 return;
             }
         }
 
-        await deleteMenuChoice(deleteId, true);
+        await api.deleteMenuChoice(deleteId, true);
 
 
         this.props.deactivateCallback();
@@ -91,8 +91,8 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
         this.setState({
             modificationState: modification.inactive,
             nameInputValue: "",
-            parentNameInputValue: null,
-            resourceNames: []
+            parentInputValue: null,
+            resourceInputValues: []
         })
 
         this.props.deactivateCallback();
@@ -101,11 +101,11 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
     getParentOptions() : Option[] {
         let options: Option[] = [];
 
-        for(const choice of this.props.allChoices){
+        for(const choice of cache.getAllMenuChoices()){
             if(choice.id !== this.props.choiceBeingEdited?.id) {
                 options.push({
                     label: choice.name,
-                    value: choice.name
+                    value: choice
                 })
             }
         }
@@ -116,10 +116,10 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
     getResourceOptions() : Option[] {
         let options: Option[] = [];
 
-        for(const resource of this.props.allResources){
+        for(const resource of cache.getAllResources()){
             let addResource = true;
-            for(const existResourceName of this.state.resourceNames){
-                if(resource.name === existResourceName){
+            for(const existResource of this.state.resourceInputValues){
+                if(resource.name === existResource.name){
                     addResource = false;
                     break;
                 }
@@ -128,7 +128,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
             if(addResource){
                 options.push({
                     label: resource.name,
-                    value: resource.name
+                    value: resource
                 })
             }
         }
@@ -195,11 +195,11 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
                           placeholder={"Optional"}
                           options={this.getParentOptions()}
                           disabled={this.state.modificationState === modification.inactive}
-                          value={this.state.parentNameInputValue}
+                          value={this.state.parentInputValue}
                           label={"Parent Name"}
-                          onChange={(newValue: string | null) => {
+                          onChange={(newValue: MenuChoice | null) => {
                               this.setState({
-                                  parentNameInputValue: newValue
+                                  parentInputValue: newValue
                               })
                           }}
                   />
@@ -208,7 +208,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
                           disabled={this.state.modificationState === modification.inactive}
                           onClick={() => {
                               this.setState({
-                                  parentNameInputValue: null
+                                  parentInputValue: null
                               })
                           }}
                   >
@@ -222,9 +222,9 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
                           disabled={this.state.modificationState === modification.inactive}
                           label={"Add Resource"}
                           options={this.getResourceOptions()}
-                          onChange={(newValue: string) => {
+                          onChange={(newValue: Resource) => {
                               this.setState(prevState => ({
-                                  resourceNames: [...prevState.resourceNames, newValue]
+                                  resourceInputValues: [...prevState.resourceInputValues, newValue]
                               }))
                           }}
                   />
@@ -232,18 +232,18 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
 
               <Row>
                   Resources:
-                  {this.state.resourceNames.map((resource) => (
+                  {this.state.resourceInputValues.map((resource) => (
                       <Button
-                          key={resource}
+                          key={resource.id}
                           small={true}
                           color={"gray"}
                           onClick={() => {
                               this.setState({
-                                  resourceNames: this.state.resourceNames.filter(existResource => resource !== existResource )
+                                  resourceInputValues: this.state.resourceInputValues.filter(existResource => resource.id !== existResource.id )
                               })
                           }}
                       >
-                          {resource}
+                          {resource.name}
                       </Button>
                   ))}
 

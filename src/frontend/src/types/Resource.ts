@@ -4,7 +4,7 @@ type Resource = {
     id: number,
     name: string,
     link: string,
-    source: Source
+    sourceId: number
 }
 
 export default Resource;

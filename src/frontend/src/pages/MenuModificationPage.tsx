@@ -1,18 +1,14 @@
 import React from "react";
 import MenuChoiceList from "../components/menuChoice/MenuChoiceList";
-import {getAllMenuChoices, getAllResources, getChildrenById, extract} from "../client";
 import MenuChoice from "../types/MenuChoice";
-import MenuChoiceWithChildren from "../types/MenuChoiceWithChildren";
 import MenuChoiceEditor from "../components/menuChoice/MenuChoiceEditor";
-import Resource from "../types/Resource";
 import Navbar from "../components/common/Navbar";
+import {cache} from "../components/common/Cache";
 
 type MenuModificationPageState = {
-    choices: MenuChoiceWithChildren[];
-    resources: Resource[];
-    selectedChoice: MenuChoiceWithChildren | null;
+    selectedChoice: MenuChoice | null;
     searchVal: string;
-    displayedChoices: MenuChoiceWithChildren[];
+    displayedChoices: MenuChoice[];
 }
 
 class MenuModificationPage extends React.Component<{}, MenuModificationPageState>{
@@ -20,39 +16,24 @@ class MenuModificationPage extends React.Component<{}, MenuModificationPageState
         super(props);
 
         this.state = {
-            choices: [],
-            resources: [],
             selectedChoice: null,
             searchVal: "",
             displayedChoices: []
         }
     }
 
-    async getChildren(choiceId: number) {
-        return await extract<MenuChoice>(getChildrenById(choiceId))
-    }
-
     updateChoices = async () => {
-        let fetchedChoices = await extract<MenuChoiceWithChildren>(getAllMenuChoices());
-
-        for (const choice of fetchedChoices) {
-            choice.children = await this.getChildren(choice.id);
-        }
-
-        this.setState({
-            choices: fetchedChoices
-        })
+        await cache.updateMenuChoices();
+        this.updateDisplayedChoices();
     }
 
     async updateResources() {
-        this.setState({
-            resources: await extract<Resource>(getAllResources())
-        })
+        await cache.updateResources();
     }
 
     updateDisplayedChoices = () => {
-        let displayedChoices: MenuChoiceWithChildren[] = [];
-        for(const choice of this.state.choices){
+        let displayedChoices: MenuChoice[] = [];
+        for(const choice of cache.getAllMenuChoices()){
             if(choice.name.search(new RegExp(`${this.state.searchVal}`, "i")) >= 0){
                 displayedChoices.push(choice);
             }
@@ -69,12 +50,12 @@ class MenuModificationPage extends React.Component<{}, MenuModificationPageState
     }
 
     componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<MenuModificationPageState>) {
-        if(this.state.searchVal !== prevState.searchVal || this.state.choices !== prevState.choices){
+        if(this.state.searchVal !== prevState.searchVal){
             this.updateDisplayedChoices();
         }
     }
 
-    updateSelectedChoice = (newChoice: MenuChoiceWithChildren) => {
+    updateSelectedChoice = (newChoice: MenuChoice) => {
         this.setState({
             selectedChoice: newChoice
         });
@@ -93,8 +74,6 @@ class MenuModificationPage extends React.Component<{}, MenuModificationPageState
 
                 <MenuChoiceEditor key={this.state.selectedChoice?.id}
                                   choiceBeingEdited={this.state.selectedChoice}
-                                  allChoices={this.state.choices}
-                                  allResources={this.state.resources}
                                   deactivateCallback={this.deselectChoice}
                                   saveCallback={this.updateChoices}>
                 </MenuChoiceEditor>

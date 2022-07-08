@@ -5,6 +5,7 @@ import org.apache.tomcat.jni.Local;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MetricDTO {
@@ -14,8 +15,8 @@ public class MetricDTO {
     private String ticketLink;
     private String userName;
     private String userFeedback;
-    private List<Long> menuchoiceIds;
-    private List<Long> resourceIds;
+    private List<Long> menuchoiceIds = new ArrayList<>();
+    private List<Long> resourceIds = new ArrayList<>();
 
 
     public static MetricDTO assemble(Metric metric){

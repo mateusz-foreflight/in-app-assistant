@@ -1,14 +1,13 @@
 import React from "react";
 import ResourceList from "../components/resource/ResourceList";
 import Resource from "../types/Resource";
-import {extract, getAllResources, getAllSources} from "../client";
 import ResourceEditor from "../components/resource/ResourceEditor";
-import Source from "../types/Source";
 import Navbar from "../components/common/Navbar";
+import {cache} from "../components/common/Cache";
 
 type ResourceModificationPageState = {
-    resources: Resource[];
-    sources: Source[];
+    //resources: Resource[];
+    // sources: Source[];
     selectedResource: Resource | null;
     searchVal: string;
     displayedResources: Resource[]
@@ -19,8 +18,8 @@ class ResourceModificationPage extends React.Component<{}, ResourceModificationP
         super(props);
 
         this.state = {
-            resources: [],
-            sources: [],
+            // resources: [],
+            // sources: [],
             selectedResource: null,
             searchVal: "",
             displayedResources: []
@@ -28,15 +27,12 @@ class ResourceModificationPage extends React.Component<{}, ResourceModificationP
     }
 
     updateResources = async () => {
-        this.setState({
-            resources: await extract<Resource>(getAllResources())
-        });
+        await cache.updateResources();
+        this.updateDisplayedResources();
     }
 
     async updateSources() {
-        this.setState({
-            sources: await extract<Source>(getAllSources())
-        })
+        await cache.updateSources();
     }
 
     updateSelectedResource = (selResource: Resource) => {
@@ -48,7 +44,7 @@ class ResourceModificationPage extends React.Component<{}, ResourceModificationP
     updateDisplayedResources() {
         let displayResources: Resource[] = [];
 
-        for(const resource of this.state.resources){
+        for(const resource of cache.getAllResources()){
             if(resource.name.search(new RegExp(`${this.state.searchVal}`, "i")) >= 0){
                 displayResources.push(resource);
             }
@@ -60,14 +56,12 @@ class ResourceModificationPage extends React.Component<{}, ResourceModificationP
     }
 
     async componentDidMount() {
-        await this.updateResources();
-
-
         await this.updateSources();
+        await this.updateResources();
     }
 
     componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<ResourceModificationPageState>) {
-        if(this.state.searchVal !== prevState.searchVal || this.state.resources !== prevState.resources){
+        if(this.state.searchVal !== prevState.searchVal){
             this.updateDisplayedResources();
         }
     }
@@ -88,7 +82,6 @@ class ResourceModificationPage extends React.Component<{}, ResourceModificationP
                     resourceBeingEdited={this.state.selectedResource}
                     deactivateCallback={this.deselectResource}
                     saveCallback={this.updateResources}
-                    allSources={this.state.sources}
                 />
                 <ResourceList
                     resources={this.state.displayedResources}

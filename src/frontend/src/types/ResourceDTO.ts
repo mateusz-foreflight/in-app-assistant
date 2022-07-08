@@ -1,7 +1,7 @@
 type ResourceDTO = {
     name: string,
     link: string,
-    source: string
+    sourceId: number
 }
 
 export default ResourceDTO;

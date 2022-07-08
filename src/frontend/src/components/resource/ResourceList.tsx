@@ -2,6 +2,7 @@ import React from "react";
 import {Heading} from "@foreflight/ffui";
 import SelectableList from "../common/SelectableList";
 import Resource from "../../types/Resource";
+import {cache} from "../common/Cache";
 
 type ResourceListProps = {
     resources: Resource[];
@@ -29,7 +30,7 @@ class ResourceList extends React.Component<ResourceListProps, {}>{
                   columnFuncs={[
                       resource => resource.name,
                       resource => resource.link,
-                      resource => resource.source.name
+                      resource => cache.getSourceFromId(resource.sourceId)!.name
                   ]}
               />
           </>

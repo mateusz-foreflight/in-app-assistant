@@ -1,9 +1,10 @@
 import React from "react";
 import Resource from "../../types/Resource";
 import {Button, Heading, IError, Option, Row, Select, TextInput} from "@foreflight/ffui";
-import {addResource, deleteResource, updateResource} from "../../client";
+import {api} from "../../client";
 import ResourceDTO from "../../types/ResourceDTO";
 import Source from "../../types/Source";
+import {cache} from "../common/Cache";
 
 enum modification {
     editing,
@@ -15,7 +16,6 @@ type ResourceEditorProps = {
     resourceBeingEdited: Resource | null
     deactivateCallback: () => void;
     saveCallback: () => void;
-    allSources: Source[]
 }
 
 type ResourceEditorState = {
@@ -24,7 +24,7 @@ type ResourceEditorState = {
     nameInputErrors: IError[]
     linkInputValue: string
     linkInputErrors: IError[]
-    sourceInputValue: string
+    sourceInputValue: Source | null
     sourceInputErrors: IError[]
 }
 
@@ -36,7 +36,7 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
             modificationState: this.props.resourceBeingEdited ? modification.editing : modification.inactive,
             nameInputValue: (this.props.resourceBeingEdited?.name === undefined) ? "" : this.props.resourceBeingEdited.name,
             linkInputValue: (this.props.resourceBeingEdited?.link === undefined) ? "" : this.props.resourceBeingEdited.link,
-            sourceInputValue: (this.props.resourceBeingEdited?.source === undefined) ? "" : this.props.resourceBeingEdited.source.name,
+            sourceInputValue: (this.props.resourceBeingEdited === null) ? null : cache.getSourceFromId(this.props.resourceBeingEdited.sourceId),
             nameInputErrors: [],
             linkInputErrors: [],
             sourceInputErrors: []
@@ -45,12 +45,12 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
 
     async deleteResource(deleteId: number){
         let deleteFailed = false;
-        await deleteResource(deleteId, false).catch(() => deleteFailed = true);
+        await api.deleteResource(deleteId, false).catch(() => deleteFailed = true);
 
         if(deleteFailed){
             if(window.confirm("Warning:\nDeleting this resource will result in it being removed from all menu " +
                 "choices that use it.\n\nDelete anyway?")){
-                await deleteResource(deleteId, true)
+                await api.deleteResource(deleteId, true)
             }
             else{
                 return;
@@ -62,20 +62,14 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
     }
 
     async saveModifiedResource(updateId: number | null) {
-        let newResource: ResourceDTO = {
-            name: this.state.nameInputValue,
-            link: this.state.linkInputValue,
-            source: this.state.sourceInputValue
-        }
-
         // Check for input errors
-        let errorOccured = false;
+        let errorOccurred = false;
 
-        if(newResource.name === ""){
+        if(this.state.nameInputValue === ""){
             this.setState({
                 nameInputErrors: [{type: "error", message: "Name cannot be blank"}]
             })
-            errorOccured = true;
+            errorOccurred = true;
         }
         else{
             this.setState({
@@ -83,11 +77,11 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
             })
         }
 
-        if(newResource.link === ""){
+        if(this.state.linkInputValue === ""){
             this.setState({
                 linkInputErrors: [{type: "error", message: "Link cannot be blank"}]
             })
-            errorOccured = true;
+            errorOccurred = true;
         }
         else{
             this.setState({
@@ -95,11 +89,11 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
             })
         }
 
-        if(newResource.source === ""){
+        if(this.state.sourceInputValue === null){
             this.setState({
                 sourceInputErrors: [{type: "error", message: "Source cannot be blank"}]
             })
-            errorOccured = true;
+            errorOccurred = true;
         }
         else{
             this.setState({
@@ -107,15 +101,23 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
             })
         }
 
-        if(errorOccured){
+        if(errorOccurred){
             return;
         }
 
+
+        let newResource: ResourceDTO = {
+            name: this.state.nameInputValue,
+            link: this.state.linkInputValue,
+            sourceId: this.state.sourceInputValue!.id
+        }
+
+
         if(updateId){
-            await updateResource(updateId, newResource);
+            await api.updateResource(updateId, newResource);
         }
         else{
-            await addResource(newResource);
+            await api.addResource(newResource);
         }
 
         this.cancelFunc();
@@ -125,10 +127,10 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
     getSourceOptions() : Option[] {
         let options: Option[] = [];
 
-        for(const source of this.props.allSources){
+        for(const source of cache.getAllSources()){
             options.push({
                 label: source.name,
-                value: source.name
+                value: source
             });
         }
 
@@ -140,7 +142,7 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
             modificationState: modification.inactive,
             nameInputValue: "",
             linkInputValue: "",
-            sourceInputValue: ""
+            sourceInputValue: null
         })
 
         this.props.deactivateCallback()
@@ -220,7 +222,7 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
                             value={this.state.sourceInputValue}
                             label={"Source"}
                             errors={this.state.sourceInputErrors}
-                            onChange={(newValue: string) => {
+                            onChange={(newValue: Source) => {
                                 this.setState({
                                     sourceInputValue: newValue
                                 })
