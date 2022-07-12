@@ -62,8 +62,6 @@ class MenuPreview extends React.Component<MenuPreviewProps, MenuPreviewState>{
             child.selected = false;
         })
 
-
-
         let newChoices: MenuChoiceSelectable[][] = this.state.choices;
         let newDisplayResourceView: boolean = this.state.displayResourceView;
         let newResourcesToDisplay: Resource[];
@@ -74,23 +72,19 @@ class MenuPreview extends React.Component<MenuPreviewProps, MenuPreviewState>{
         })
 
         // Clear all rows after the selected one
-        for (let r = row + 1; r < newChoices.length; r++) {
-            newChoices[r] = []
-        }
+        newChoices.splice(row + 1, newChoices.length);
 
         // Add new children of selected choice to state
         newChoices.push(children);
 
         if (children.length === 0) {
             newDisplayResourceView = true;
-            newResourcesToDisplay = (await cache.getResourcesFromIds(choiceSelected.resourceIds)).slice();
-            //newResourcesToDisplay = [];
+            newResourcesToDisplay = (cache.getResourcesFromIds(choiceSelected.resourceIds)).slice();
 
         } else {
             newDisplayResourceView = false;
             newResourcesToDisplay = [];
         }
-
 
         this.setState({
             choices: newChoices,
@@ -104,7 +98,7 @@ class MenuPreview extends React.Component<MenuPreviewProps, MenuPreviewState>{
         return(
             <div>
                 {this.state.choices.map((choiceRow, rowIdx) =>(
-                    <Row key={rowIdx} margin={"0px"}>
+                    <Row key={rowIdx} margin={"5px"}>
                         {choiceRow.map((choice, choiceIdx) => (
                             <Button color={choice.selected ? "green" : "blue"} key={choice.id} onClick={() => {
                                 this.buttonClick(rowIdx, choiceIdx)
