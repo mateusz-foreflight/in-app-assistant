@@ -2,6 +2,7 @@ import React from "react";
 import {Button, IColumn, IRow, Row, SortableTable} from "@foreflight/ffui";
 import Resource from "../../../types/Resource";
 import {cache} from "../Cache";
+import Source from "../../../types/Source";
 
 type ResourceViewProps = {
     resources: Resource[];
@@ -14,7 +15,6 @@ class ResourceView extends React.Component<ResourceViewProps, {}>{
     resourceCols: IColumn[] = [
         { name: ""},
         { name: 'Resource Name', defaultWidth:'10%'},
-        { name: 'Link', defaultWidth:'100px'},
         { name: 'Source', defaultWidth:'7%px'},
     ];
 
@@ -36,9 +36,10 @@ class ResourceView extends React.Component<ResourceViewProps, {}>{
                         Go To
                     </Button>
             })
+            let source: Source = cache.getSourceFromId(resource.sourceId)!;
+
             newRow.push(resource.name);
-            newRow.push(resource.link);
-            newRow.push(cache.getSourceFromId(resource.sourceId)!.name);
+            newRow.push({raw:<a href={source.link} target="_blank" rel="noreferrer">{source.name}</a>});
             newRows.push(newRow);
         })
 
