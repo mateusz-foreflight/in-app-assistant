@@ -1,10 +1,11 @@
 import React from "react";
 import Metric from "../../types/Metric";
-import {Heading, Row, Textarea, TextInput} from "@foreflight/ffui";
+import {Button, Heading, Row, Textarea, TextInput} from "@foreflight/ffui";
 import {cache} from "../common/Cache";
 
 type MetricViewPanelProps = {
     metric: Metric | null
+    deselectCallback: () => void;
 }
 
 class MetricViewPanel extends React.Component<MetricViewPanelProps, {}>{
@@ -77,6 +78,14 @@ class MetricViewPanel extends React.Component<MetricViewPanelProps, {}>{
                             <a href={resource.link} target="_blank" rel="noreferrer">{resource.name}</a>
                         )) : ""}
                     </Row>
+                </Row>
+
+                <Row flexJustify={"flex-end"} width={"75%"} style={{"margin":"5px"}}>
+                    <Button color={"red"} disabled={this.props.metric === null} onClick={() => {
+                        this.props.deselectCallback();
+                    }}>
+                        Close
+                    </Button>
                 </Row>
             </Row>
         );

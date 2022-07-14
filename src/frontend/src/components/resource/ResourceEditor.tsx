@@ -142,7 +142,10 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
             modificationState: modification.inactive,
             nameInputValue: "",
             linkInputValue: "",
-            sourceInputValue: null
+            sourceInputValue: null,
+            linkInputErrors: [],
+            sourceInputErrors: [],
+            nameInputErrors: [],
         })
 
         this.props.deactivateCallback()

@@ -1,5 +1,5 @@
 import React from "react";
-import {Heading} from "@foreflight/ffui";
+import {Button, Heading} from "@foreflight/ffui";
 import SelectableList from "../common/SelectableList";
 import Source from "../../types/Source";
 
@@ -28,7 +28,13 @@ class SourceList extends React.Component<SourceListProps, {}>{
                     searchCallback={this.props.searchCallback}
                     columnFuncs={[
                         source => source.name,
-                        source => source.link
+                        source => {return {raw:
+                                <Button
+                                    small
+                                    onClick={() => window.open(source.link)}
+                                >
+                                    Go To
+                                </Button>}},
                     ]}
                 />
             </>

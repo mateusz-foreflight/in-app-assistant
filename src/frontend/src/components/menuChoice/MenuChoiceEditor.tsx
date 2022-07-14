@@ -91,6 +91,7 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
         this.setState({
             modificationState: modification.inactive,
             nameInputValue: "",
+            nameInputErrors: [],
             parentInputValue: null,
             resourceInputValues: []
         })

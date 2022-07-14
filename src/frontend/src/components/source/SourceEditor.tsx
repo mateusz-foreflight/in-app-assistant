@@ -107,7 +107,9 @@ class SourceEditor extends React.Component<SourceEditorProps, SourceEditorState>
         this.setState({
             modificationState: modification.inactive,
             nameInputValue: "",
-            linkInputValue: ""
+            linkInputValue: "",
+            linkInputErrors: [],
+            nameInputErrors: []
         })
 
         this.props.deactivateCallback();

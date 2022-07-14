@@ -1,5 +1,5 @@
 import React from "react";
-import {Heading} from "@foreflight/ffui";
+import {Button, Heading} from "@foreflight/ffui";
 import SelectableList from "../common/SelectableList";
 import Resource from "../../types/Resource";
 import {cache} from "../common/Cache";
@@ -29,7 +29,13 @@ class ResourceList extends React.Component<ResourceListProps, {}>{
                   searchCallback={this.props.searchCallback}
                   columnFuncs={[
                       resource => resource.name,
-                      resource => resource.link,
+                      resource => {return {raw:
+                              <Button
+                                  small
+                                  onClick={() => window.open(resource.link)}
+                              >
+                                  Go To
+                              </Button>}},
                       resource => cache.getSourceFromId(resource.sourceId)!.name
                   ]}
               />

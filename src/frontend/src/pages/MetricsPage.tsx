@@ -60,6 +60,7 @@ class MetricsPage extends React.Component<{}, MetricsPageState>{
 
                 <MetricViewPanel
                     metric={this.state.selectedMetric}
+                    deselectCallback={() => this.setState({selectedMetric: null})}
                 />
 
 
