@@ -9,6 +9,7 @@ type MenuModificationPageState = {
     selectedChoice: MenuChoice | null;
     searchVal: string;
     displayedChoices: MenuChoice[];
+    cacheLoaded: boolean;
 }
 
 class MenuModificationPage extends React.Component<{}, MenuModificationPageState>{
@@ -18,7 +19,8 @@ class MenuModificationPage extends React.Component<{}, MenuModificationPageState
         this.state = {
             selectedChoice: null,
             searchVal: "",
-            displayedChoices: []
+            displayedChoices: [],
+            cacheLoaded: false
         }
     }
 
@@ -47,6 +49,7 @@ class MenuModificationPage extends React.Component<{}, MenuModificationPageState
     async componentDidMount() {
         await this.updateChoices();
         await this.updateResources();
+        this.setState({cacheLoaded: true})
     }
 
     componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<MenuModificationPageState>) {

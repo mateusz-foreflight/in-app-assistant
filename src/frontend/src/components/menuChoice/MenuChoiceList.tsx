@@ -40,7 +40,7 @@ class MenuChoiceList extends React.Component<MenuChoiceListProps, {}>{
                         choice => {
                             return {raw:
                                     <>{cache.getResourcesFromIds(choice.resourceIds).map((resource) => (
-                                        <div key={resource.id}>{resource.name}</div>
+                                        <div key={resource.id}>{resource.name} </div>
                                     ))}</>
                             };
                         }
