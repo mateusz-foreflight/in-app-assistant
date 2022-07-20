@@ -4,7 +4,8 @@ type MenuChoice = {
     id: number,
     name: string,
     parentId: number | null,
-    resourceIds: number[]
+    resourceIds: number[],
+    isPublic: boolean
 }
 
 export default MenuChoice;

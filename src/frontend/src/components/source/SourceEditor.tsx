@@ -118,7 +118,7 @@ class SourceEditor extends React.Component<SourceEditorProps, SourceEditorState>
     getCurrentlyEditingText(){
         switch(this.state.modificationState){
             case modification.adding:
-                return "ADDING NEW CHOICE"
+                return "ADDING NEW SOURCE"
             case modification.editing:
                 return this.props.sourceBeingEdited?.name
             case modification.inactive:
@@ -145,7 +145,7 @@ class SourceEditor extends React.Component<SourceEditorProps, SourceEditorState>
                                 })
                             }}
                     >
-                        Add New Choice
+                        Add New Source
                     </Button>
                     <Button color={"red"}
                             disabled={!(this.state.modificationState === modification.editing)}
@@ -153,7 +153,7 @@ class SourceEditor extends React.Component<SourceEditorProps, SourceEditorState>
                                 this.deleteSource(this.props.sourceBeingEdited!.id)
                             }}
                     >
-                        Delete This Choice
+                        Delete This Source
                     </Button>
                 </Row>
 

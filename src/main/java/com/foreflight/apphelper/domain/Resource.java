@@ -28,6 +28,9 @@ public class Resource {
             nullable = false)
     private Source source;
 
+    @Column(name = "public")
+    private Boolean isPublic;
+
     public Resource() {
     }
 
@@ -35,6 +38,13 @@ public class Resource {
         this.name = name;
         this.link = link;
         this.source = source;
+    }
+
+    public Resource(String name, String link, Source source, Boolean isPublic) {
+        this.name = name;
+        this.link = link;
+        this.source = source;
+        this.isPublic = isPublic;
     }
 
     public Long getId() {
@@ -68,17 +78,25 @@ public class Resource {
         this.source = source;
     }
 
+    public Boolean getPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(Boolean aPublic) {
+        isPublic = aPublic;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Resource resource = (Resource) o;
-        return id.equals(resource.id) && name.equals(resource.name) && Objects.equals(link, resource.link) && source.equals(resource.source);
+        return id.equals(resource.id) && name.equals(resource.name) && Objects.equals(link, resource.link) && source.equals(resource.source) && isPublic.equals(resource.isPublic);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, link, source);
+        return Objects.hash(id, name, link, source, isPublic);
     }
 
     @Override
@@ -87,7 +105,8 @@ public class Resource {
         sb.append("id=").append(id);
         sb.append(", name='").append(name).append('\'');
         sb.append(", link='").append(link).append('\'');
-        sb.append(", source='").append(source.getName()).append('\'');
+        sb.append(", source=").append(source);
+        sb.append(", isPublic=").append(isPublic);
         sb.append('}');
         return sb.toString();
     }

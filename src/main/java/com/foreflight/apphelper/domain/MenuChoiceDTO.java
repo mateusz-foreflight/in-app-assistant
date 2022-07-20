@@ -2,6 +2,8 @@ package com.foreflight.apphelper.domain;
 
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +13,7 @@ public class MenuChoiceDTO {
     private String name;
     private Long parentId = null;
     private List<Long> resourceIds = new ArrayList<>();
+    private Boolean isPublic = false;
 
     public static MenuChoiceDTO assemble(MenuChoice choice){
         MenuChoiceDTO dto = new MenuChoiceDTO();
@@ -21,11 +24,20 @@ public class MenuChoiceDTO {
         for(Resource resource : choice.getResources()){
             dto.getResourceIds().add(resource.getId());
         }
+        dto.setPublic(choice.getPublic());
 
         return dto;
     }
 
     public MenuChoiceDTO(){}
+
+    public MenuChoiceDTO(Long id, String name, Long parentId, List<Long> resourceIds, Boolean isPublic) {
+        this.id = id;
+        this.name = name;
+        this.parentId = parentId;
+        this.resourceIds = resourceIds;
+        this.isPublic = isPublic;
+    }
 
     public MenuChoiceDTO(Long id, String name, Long parentId, List<Long> resourceIds) {
         this.id = id;
@@ -64,5 +76,15 @@ public class MenuChoiceDTO {
 
     public void setResourceIds(List<Long> resourceIds) {
         this.resourceIds = resourceIds;
+    }
+
+    @JsonProperty("isPublic")
+    public Boolean getPublic() {
+        return isPublic;
+    }
+
+    @JsonProperty("isPublic")
+    public void setPublic(Boolean aPublic) {
+        isPublic = aPublic;
     }
 }

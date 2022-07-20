@@ -72,7 +72,7 @@ class MenuModificationPage extends React.Component<{}, MenuModificationPageState
 
     render() {
         return (
-            <div>
+            <div className={"page"}>
                 <Navbar activePage={1}/>
 
                 <MenuChoiceEditor key={this.state.selectedChoice?.id}

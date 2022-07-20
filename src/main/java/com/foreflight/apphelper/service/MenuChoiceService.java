@@ -131,6 +131,8 @@ public class MenuChoiceService {
 
         choice.setResources(resourceService.getUniqueResourcesFromIdList(dto.getResourceIds()));
 
+        choice.setPublic(dto.getPublic());
+
         return choice;
     }
 

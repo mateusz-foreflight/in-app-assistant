@@ -32,12 +32,22 @@ public class MenuChoice implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "resource_id"))
     private List<Resource> resources = new ArrayList<>();
 
+    @Column(name="public")
+    private Boolean isPublic;
+
     public MenuChoice(){}
 
-    public MenuChoice(String name, MenuChoice parent, List<Resource> resources){
+    public MenuChoice(String name, MenuChoice parent, List<Resource> resources) {
         this.name = name;
         this.parent = parent;
         this.resources = resources;
+    }
+
+    public MenuChoice(String name, MenuChoice parent, List<Resource> resources, Boolean isPublic) {
+        this.name = name;
+        this.parent = parent;
+        this.resources = resources;
+        this.isPublic = isPublic;
     }
 
     public Long getId() {
@@ -72,6 +82,14 @@ public class MenuChoice implements Serializable {
         this.resources = resources;
     }
 
+    public Boolean getPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(Boolean aPublic) {
+        isPublic = aPublic;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -93,12 +111,13 @@ public class MenuChoice implements Serializable {
             }
         }
 
-        return id.equals(choice.id) && name.equals(choice.name) && Objects.equals(parent, choice.parent) && resourcesEquality;
+        return id.equals(choice.id) && name.equals(choice.name) && Objects.equals(parent, choice.parent)
+                && isPublic.equals(choice.isPublic) && resourcesEquality;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, parent, resources);
+        return Objects.hash(id, name, parent, resources, isPublic);
     }
 
     @Override
@@ -108,6 +127,7 @@ public class MenuChoice implements Serializable {
         sb.append(", name='").append(name).append('\'');
         sb.append(", parent=").append(parent);
         sb.append(", resources=").append(resources);
+        sb.append(", public=").append(isPublic);
         sb.append('}');
         return sb.toString();
     }

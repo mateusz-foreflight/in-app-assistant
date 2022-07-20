@@ -1,10 +1,13 @@
 package com.foreflight.apphelper.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ResourceDTO {
     private Long id;
     private String name;
     private String link;
     private Long sourceId;
+    private Boolean isPublic;
 
     public static ResourceDTO assemble(Resource resource){
         ResourceDTO dto = new ResourceDTO();
@@ -13,6 +16,7 @@ public class ResourceDTO {
         dto.setName(resource.getName());
         dto.setLink(resource.getLink());
         dto.setSourceId(resource.getSource().getId());
+        dto.setPublic(resource.getPublic());
 
         return dto;
     }
@@ -57,5 +61,15 @@ public class ResourceDTO {
 
     public void setSourceId(Long sourceId) {
         this.sourceId = sourceId;
+    }
+
+    @JsonProperty("isPublic")
+    public Boolean getPublic() {
+        return isPublic;
+    }
+
+    @JsonProperty("isPublic")
+    public void setPublic(Boolean aPublic) {
+        isPublic = aPublic;
     }
 }

@@ -109,7 +109,8 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
         let newResource: ResourceDTO = {
             name: this.state.nameInputValue,
             link: this.state.linkInputValue,
-            sourceId: this.state.sourceInputValue!.id
+            sourceId: this.state.sourceInputValue!.id,
+            isPublic: true
         }
 
 
@@ -154,7 +155,7 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
     getCurrentlyEditingText(){
         switch(this.state.modificationState){
             case modification.adding:
-                return "ADDING NEW CHOICE"
+                return "ADDING NEW RESOURCE"
             case modification.editing:
                 return this.props.resourceBeingEdited?.name
             case modification.inactive:
@@ -181,7 +182,7 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
                                 })
                             }}
                     >
-                        Add New Choice
+                        Add New Resource
                     </Button>
                     <Button color={"red"}
                             disabled={!(this.state.modificationState === modification.editing)}
@@ -189,7 +190,7 @@ class ResourceEditor extends React.Component<ResourceEditorProps, ResourceEditor
                                 this.deleteResource(this.props.resourceBeingEdited!.id)
                             }}
                     >
-                        Delete This Choice
+                        Delete This Resource
                     </Button>
                 </Row>
 

@@ -4,7 +4,8 @@ type Resource = {
     id: number,
     name: string,
     link: string,
-    sourceId: number
+    sourceId: number,
+    isPublic: boolean
 }
 
 export default Resource;

@@ -1,7 +1,8 @@
 type MenuChoiceDTO = {
     name: string,
     parentId: number | null,
-    resourceIds: number[]
+    resourceIds: number[],
+    isPublic: boolean
 }
 
 export default MenuChoiceDTO;

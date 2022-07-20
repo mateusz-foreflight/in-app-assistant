@@ -55,7 +55,7 @@ class MetricsPage extends React.Component<{}, MetricsPageState>{
 
     render() {
         return (
-            <div>
+            <div className={"page"}>
                 <Navbar activePage={5}/>
 
                 <MetricViewPanel

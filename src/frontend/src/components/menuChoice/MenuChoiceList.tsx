@@ -21,7 +21,7 @@ class MenuChoiceList extends React.Component<MenuChoiceListProps, {}>{
                 </Heading>
 
                 <SelectableList<MenuChoice>
-                    columnNames={["Menu Choice Name", "Parent Name", "Children", "Resources"]}
+                    columnNames={["Menu Choice Name", "Public", "Parent Name", "Children", "Resources"]}
                     items={this.props.choices}
                     getIdFunc={choice => choice.id}
                     selectedItemId={this.props.selectedChoiceId}
@@ -29,6 +29,7 @@ class MenuChoiceList extends React.Component<MenuChoiceListProps, {}>{
                     searchCallback={this.props.searchCallback}
                     columnFuncs={[
                         choice => choice.name,
+                        choice => choice.isPublic ? "True" : "False",
                         choice => choice.parentId ? cache.getMenuChoiceFromId(choice.parentId)!.name : "",
                         choice => {
                             return {raw:

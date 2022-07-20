@@ -67,7 +67,7 @@ class SourceModificationPage extends React.Component<{}, SourceModificationState
 
     render() {
         return (
-            <div>
+            <div className={"page"}>
                 <Navbar activePage={3}/>
 
                 <SourceEditor

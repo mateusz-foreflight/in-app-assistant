@@ -46,7 +46,8 @@ class MenuChoiceEditor extends React.Component<MenuChoiceEditorProps, MenuChoice
         let newChoice: MenuChoiceDTO = {
             name: this.state.nameInputValue,
             parentId: this.state.parentInputValue?.id ?? null,
-            resourceIds: this.state.resourceInputValues.map(resource => resource.id)
+            resourceIds: this.state.resourceInputValues.map(resource => resource.id),
+            isPublic: true
         }
 
         if(newChoice.name === ""){

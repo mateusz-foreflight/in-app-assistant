@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS
     "id"   SERIAL not null PRIMARY KEY,
     "name" TEXT not null UNIQUE,
     "link" TEXT not null,
-    "source_id" INTEGER not null REFERENCES source
+    "source_id" INTEGER not null REFERENCES source,
+    "public"    BOOLEAN not null DEFAULT false
 );
 
 CREATE TABLE IF NOT EXISTS
@@ -20,7 +21,8 @@ CREATE TABLE IF NOT EXISTS
 (
     "id"        SERIAL not null PRIMARY KEY,
     "name"      TEXT not null UNIQUE,
-    "parent_id" INTEGER null REFERENCES menuchoice
+    "parent_id" INTEGER null REFERENCES menuchoice,
+    "public"    BOOLEAN not null DEFAULT false
 );
 
 CREATE TABLE IF NOT EXISTS

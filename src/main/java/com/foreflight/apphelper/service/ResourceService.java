@@ -109,6 +109,8 @@ public class ResourceService {
         }
         resource.setSource(newSource.get());
 
+        resource.setPublic(dto.getPublic());
+
         return resource;
     }
 

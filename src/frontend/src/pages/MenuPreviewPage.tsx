@@ -7,7 +7,7 @@ class MenuPreviewPage extends React.Component<{},{}>{
 
     render(){
         return (
-          <div>
+          <div className={"page"}>
               <Navbar activePage={0}/>
 
               <MenuPreview></MenuPreview>

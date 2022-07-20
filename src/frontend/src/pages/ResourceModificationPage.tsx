@@ -74,7 +74,7 @@ class ResourceModificationPage extends React.Component<{}, ResourceModificationP
 
     render() {
         return (
-            <div>
+            <div className={"page"}>
                 <Navbar activePage={2}/>
 
                 <ResourceEditor

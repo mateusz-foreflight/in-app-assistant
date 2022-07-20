@@ -81,7 +81,7 @@ class UserPreviewPage extends React.Component<{}, UserPreviewState> {
 
     render() {
         return (
-            <>
+            <div className={"page"}>
 
 
                 <Navbar activePage={4}/>
@@ -191,7 +191,7 @@ class UserPreviewPage extends React.Component<{}, UserPreviewState> {
                         </Row>
                     </Row>
                 </dialog>
-            </>
+            </div>
         );
     }
 }
